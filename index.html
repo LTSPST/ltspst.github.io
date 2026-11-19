@@ -1,1 +1,235 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LTSPST — Официальный сайт ютубера и разработчика</title>
+  <meta name="description" content="Официальный сайт ютубера LTSPST. Все проекты, соцсети и приватный браузер LTSPST Internet Browser на движке Firefox для Android.">
+  <meta name="keywords" content="LTSPST, ЛТСПСТ, ютубер LTSPST, LTSPST Internet Browser, проекты ЛТСПСТ">
+  <style>
+    :root {
+      --bg: #0b0d14;
+      --card: #141824;
+      --card-hover: #1a2030;
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #f3f4f6;
+      --muted: #9ca3af;
+      --accent1: #ff7139;
+      --accent2: #9059ff;
+    }
 
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container {
+      max-width: 720px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 40px 18px;
+      flex: 1;
+    }
+
+    .profile {
+      text-align: center;
+      margin-bottom: 36px;
+      position: relative;
+    }
+
+    .profile::before {
+      content: "";
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(144, 89, 255, 0.25), rgba(255, 113, 57, 0.15), transparent 70%);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .avatar {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      margin: 0 auto 16px;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: #fff;
+      box-shadow: 0 10px 25px rgba(144, 89, 255, 0.35);
+      overflow: hidden;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    h1 {
+      font-size: 2.1rem;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .bio {
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .social-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 36px;
+    }
+
+    .social-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px 20px;
+      border-radius: 14px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1rem;
+      color: #fff;
+      background: var(--card);
+      border: 1px solid var(--border);
+      transition: transform 0.2s, background 0.2s;
+    }
+
+    .social-btn:hover {
+      transform: translateY(-2px);
+      background: var(--card-hover);
+    }
+
+    .social-btn.yt { border-color: rgba(255, 0, 51, 0.4); }
+    .social-btn.tg { border-color: rgba(38, 165, 228, 0.4); }
+
+    .section-title {
+      font-size: 1.15rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .project-card {
+      display: block;
+      text-decoration: none;
+      color: var(--text);
+      background: linear-gradient(145deg, #171c2b, #121520);
+      border: 1px solid rgba(255, 113, 57, 0.35);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 16px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .project-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent1);
+    }
+
+    .project-tag {
+      display: inline-block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 8px;
+      background: rgba(255, 113, 57, 0.15);
+      color: #ff986e;
+      margin-bottom: 10px;
+    }
+
+    .project-card h2 {
+      font-size: 1.4rem;
+      margin-bottom: 8px;
+    }
+
+    .project-card p {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 16px;
+    }
+
+    .project-link {
+      display: inline-flex;
+      align-items: center;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #ff986e;
+    }
+
+    footer {
+      text-align: center;
+      padding: 24px 18px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="profile">
+      <div class="avatar">
+        <img src="avatar.png" alt="LTSPST" onerror="this.style.display='none'; this.parentElement.textContent='LT';">
+      </div>
+      <h1>LTSPST</h1>
+      <p class="bio">Ютубер и мобильный разработчик. Создаю собственные приложения и браузеры прямо на телефоне без ПК.</p>
+    </div>
+
+    <div class="social-grid">
+      <a href="ССЫЛКА_НА_YOUTUBE" class="social-btn yt" target="_blank">
+        ▶ YouTube канал
+      </a>
+      <a href="ССЫЛКА_НА_TELEGRAM" class="social-btn tg" target="_blank">
+        ✈ Telegram канал
+      </a>
+      <a href="ССЫЛКА_НА_GITHUB" class="social-btn" target="_blank">
+        💻 GitHub профиль
+      </a>
+    </div>
+
+    <div class="section-title">Мои проекты</div>
+
+    <a href="/LTSPST-Internet-Browser/" class="project-card">
+      <div class="project-tag">🔥 Главный проект • Android</div>
+      <h2>LTSPST Internet Browser</h2>
+      <p>Приватный мобильный браузер на движке Firefox (GeckoView) без слежки и рекламы. Разработан полностью на смартфоне.</p>
+      <div class="project-link">Открыть страницу браузера и скачать APK →</div>
+    </a>
+  </div>
+
+  <footer>
+    © 2026 LTSPST. Официальный сайт.
+  </footer>
+
+</body>
+</html>
