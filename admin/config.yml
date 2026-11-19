@@ -1,1 +1,31 @@
+backend:
+  name: git-gateway
+  branch: main
 
+media_folder: "images"
+public_folder: "/images"
+
+collections:
+  - name: "settings"
+    label: "Настройки сайта"
+    files:
+      - name: "general"
+        label: "Главная страница"
+        file: "content.json"
+        fields:
+          - {label: "Заголовок (Имя)", name: "title", widget: "string"}
+          - {label: "Описание (Био)", name: "bio", widget: "text"}
+          - {label: "Аватар", name: "avatar", widget: "image", required: false}
+          - {label: "Ссылка YouTube", name: "youtube", widget: "string"}
+          - {label: "Ссылка Telegram", name: "telegram", widget: "string"}
+          - {label: "Ссылка GitHub", name: "github", widget: "string"}
+          - {label: "Текст новостей", name: "news_text", widget: "text"}
+          - label: "Проекты"
+            name: "projects"
+            widget: "list"
+            fields:
+              - {label: "Название", name: "name", widget: "string"}
+              - {label: "Тег", name: "tag", widget: "string"}
+              - {label: "Описание", name: "description", widget: "text"}
+              - {label: "Ссылка", name: "link", widget: "string"}
+              - {label: "Текст кнопки", name: "link_text", widget: "string"}
