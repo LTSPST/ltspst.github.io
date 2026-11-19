@@ -6,6 +6,7 @@
   <title>LTSPST — Официальный сайт ютубера и разработчика</title>
   <meta name="description" content="Официальный сайт ютубера LTSPST. Все проекты, соцсети и приватный браузер LTSPST Internet Browser на движке Firefox для Android.">
   <meta name="keywords" content="LTSPST, ЛТСПСТ, ютубер LTSPST, LTSPST Internet Browser, проекты ЛТСПСТ">
+  
   <style>
     :root {
       --bg: #0b0d14;
@@ -34,6 +35,104 @@
       flex-direction: column;
     }
 
+    /* ================= HEADER (ВЕРХНЯЯ ПАНЕЛЬ) ================= */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(11, 13, 20, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 24px;
+    }
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 900;
+      font-size: 1.2rem;
+      letter-spacing: 0.5px;
+    }
+
+    /* Иконка головы Майнкрафта */
+    .header-logo img {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px; /* Делает края скругленными, как у иконки */
+      object-fit: cover;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    .header-nav {
+      display: flex;
+      gap: 24px;
+    }
+
+    .header-nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+
+    .header-nav a:hover {
+      color: var(--text);
+    }
+
+    /* Кнопка бургер-меню (по умолчанию скрыта на ПК) */
+    .mobile-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.8rem;
+      cursor: pointer;
+      padding: 4px;
+      line-height: 1;
+    }
+
+    /* Выпадающее мобильное меню */
+    .mobile-menu {
+      display: none;
+      flex-direction: column;
+      background: var(--card);
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    }
+
+    .mobile-menu.active {
+      display: flex;
+    }
+
+    .mobile-menu a {
+      padding: 16px 24px;
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 600;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .mobile-menu a:last-child {
+      border-bottom: none;
+    }
+    
+    .mobile-menu a:hover {
+      background: var(--card-hover);
+    }
+
+    /* ================= ОСНОВНОЙ КОНТЕНТ ================= */
     .container {
       max-width: 720px;
       width: 100%;
@@ -192,10 +291,56 @@
       color: var(--muted);
       font-size: 0.85rem;
     }
+
+    /* ================= МЕДИА-ЗАПРОСЫ (ДЛЯ ТЕЛЕФОНОВ) ================= */
+    @media (max-width: 768px) {
+      .header-nav {
+        display: none; /* Скрываем обычное меню на телефонах */
+      }
+      
+      .mobile-toggle {
+        display: block; /* Показываем кнопку с тремя полосками */
+      }
+      
+      /* Делаем так, чтобы выпадающее меню позиционировалось относительно хедера */
+      .header {
+        position: sticky;
+      }
+    }
   </style>
 </head>
 <body>
 
+  <!-- ВЕРХНЯЯ ПАНЕЛЬ С ЛОГОТИПОМ И МЕНЮ -->
+  <header class="header">
+    <!-- Логотип -->
+    <a href="/" class="header-logo">
+      <!-- ВАЖНО: замените "logo.png" на реальный путь к вашей картинке, если она в другой папке -->
+      <img src="logo.png" alt="Логотип LTSPST">
+      LTSPST
+    </a>
+
+    <!-- Меню для ПК -->
+    <nav class="header-nav">
+      <a href="#news">Новости</a>
+      <a href="#server">Сервер</a>
+      <a href="#programs">Программы</a>
+    </nav>
+
+    <!-- Кнопка для мобильных (три полоски) -->
+    <button class="mobile-toggle" aria-label="Открыть меню" id="burgerBtn">
+      ☰
+    </button>
+
+    <!-- Выпадающее меню для мобильных -->
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="#news">Новости</a>
+      <a href="#server">Сервер</a>
+      <a href="#programs">Программы</a>
+    </div>
+  </header>
+
+  <!-- ОСНОВНОЙ КОНТЕНТ -->
   <div class="container">
     <div class="profile">
       <div class="avatar">
@@ -217,7 +362,11 @@
       </a>
     </div>
 
-    <div class="section-title">Мои проекты</div>
+    <!-- Блоки, к которым ведут ссылки из меню (можно переименовать/добавить контент) -->
+    <div id="news" class="section-title" style="margin-top: 40px;">Новости</div>
+    <p style="color: var(--muted); margin-bottom: 30px;">Здесь скоро появятся последние новости.</p>
+
+    <div id="programs" class="section-title">Мои проекты</div>
 
     <a href="/LTSPST-Internet-Browser/" class="project-card">
       <div class="project-tag">🔥 Главный проект • Android</div>
@@ -230,6 +379,32 @@
   <footer>
     © 2026 LTSPST. Официальный сайт.
   </footer>
+
+  <!-- СКРИПТ ДЛЯ РАБОТЫ МОБИЛЬНОГО МЕНЮ -->
+  <script>
+    const burgerBtn = document.getElementById('burgerBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    burgerBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('active');
+      
+      // Меняем иконку (полоски на крестик и обратно)
+      if (mobileMenu.classList.contains('active')) {
+        burgerBtn.textContent = '✕';
+      } else {
+        burgerBtn.textContent = '☰';
+      }
+    });
+
+    // Закрываем меню при клике на ссылку (чтобы оно не висело открытым)
+    const menuLinks = mobileMenu.querySelectorAll('a');
+    menuLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.remove('active');
+        burgerBtn.textContent = '☰';
+      });
+    });
+  </script>
 
 </body>
 </html>
