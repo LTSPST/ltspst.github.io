@@ -56,9 +56,19 @@
     }
     .news-card:hover { border-color: rgba(255, 59, 59, 0.4); }
     .date { font-size: 0.85rem; color: var(--muted); margin-bottom: 8px; font-weight: 600; }
-    .news-card h2 { font-size: 1.3rem; margin-bottom: 10px; }
-    .news-card p { color: var(--muted); font-size: 0.95rem; margin-bottom: 16px; }
+    .news-card h2 { font-size: 1.3rem; margin-bottom: 10px; color: var(--text); }
     
+    /* Стили для отформатированного текста в новостях */
+    .news-content { color: var(--muted); font-size: 0.95rem; margin-bottom: 16px; line-height: 1.7; }
+    .news-content p { margin-bottom: 10px; }
+    .news-content strong { color: var(--text); font-weight: bold; }
+    .news-content em { font-style: italic; }
+    .news-content u { text-decoration: underline; }
+    .news-content img { max-width: 100%; border-radius: 8px; margin: 10px 0; display: block; }
+    .news-content a { color: var(--accent2); text-decoration: underline; }
+    .news-content ul { padding-left: 20px; margin-bottom: 10px; }
+    .news-content li { margin-bottom: 5px; }
+
     .comments-section { border-top: 1px solid var(--border); padding-top: 16px; margin-top: 16px; }
     .comment { background: rgba(0,0,0,0.2); padding: 12px; border-radius: 10px; margin-bottom: 10px; font-size: 0.9rem; }
     .comment-author { font-weight: bold; color: var(--accent2); margin-bottom: 4px; display: block; }
@@ -78,9 +88,9 @@
       color: white; padding: 10px; border-radius: 8px; margin-bottom: 10px; font-family: inherit; outline: none;
     }
     .add-news-form input:focus, .add-news-form textarea:focus { border-color: var(--accent1); }
-    .add-news-form textarea { min-height: 100px; resize: vertical; }
-    
-    .loading-text { color: var(--muted); text-align: center; padding: 20px; }
+    .add-news-form textarea { min-height: 150px; resize: vertical; }
+    .hint { font-size: 0.8rem; color: var(--muted); margin-bottom: 15px; line-height: 1.4; }
+    .hint code { background: rgba(255, 59, 59, 0.15); padding: 2px 4px; border-radius: 4px; font-family: monospace; }
   </style>
 </head>
 <body>
@@ -98,7 +108,7 @@
       <button id="toggleAddBtn" class="btn" style="display: none;" onclick="toggleAddForm()">+ Добавить новость</button>
     </div>
 
-    <!-- БЛОК АВТОРИЗАЦИИ АДМИНА -->
+    <!-- БЛОК АВТОРИЗАЦИИ -->
     <div id="authBox" class="auth-box">
       <div id="loginForm" style="display: flex; gap: 10px; flex-wrap: wrap; width: 100%;">
         <input type="password" id="adminPassInput" class="auth-input" placeholder="Пароль админа" style="flex: 1; min-width: 150px;">
@@ -113,6 +123,14 @@
     <!-- ФОРМА ДОБАВЛЕНИЯ НОВОСТИ -->
     <div id="addNewsForm" class="add-news-form">
       <h3 style="margin-bottom: 15px;">Новая запись</h3>
+      
+      <div class="hint">
+        Поддерживается Markdown:<br>
+        <code>**жирный**</code>, <code>*курсив*</code>, <code>__подчеркнутый__</code><br>
+        <code>![Описание](ссылка_на_картинку)</code> — для фото<br>
+        <code>- пункт списка</code> — для списков
+      </div>
+
       <input type="text" id="newsTitle" placeholder="Заголовок новости...">
       <textarea id="newsText" placeholder="Текст новости..."></textarea>
       <div style="display: flex; gap: 10px;">
@@ -125,13 +143,12 @@
     <div id="newsList">
       <div class="loading-text">Загрузка новостей...</div>
     </div>
-
   </div>
 
-  <!-- ПОДКЛЮЧАЕМ FIREBASE -->
+  <!-- ПОДКЛЮЧАЕМ FIREBASE И ПАРСЕР MARKDOWN -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, updateDoc, doc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, updateDoc, doc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAWpB5hZ6oDm89NxIR7d-yPZ2ST3efz8us",
@@ -147,10 +164,41 @@
     const db = getFirestore(app);
     const newsCollection = collection(db, "news");
 
-    // ПАРОЛЬ ДЛЯ АДМИНА (можешь поменять на любой свой)
     const ADMIN_PASSWORD = "ltspst2026"; 
-    
     let isAdmin = localStorage.getItem('ltspst_admin') === 'true';
+
+    // --- ПАРСЕР MARKDOWN (Превращает текст в HTML) ---
+    function parseMarkdown(text) {
+      if (!text) return '';
+      let html = text;
+      
+      // 1. Картинки ![alt](url)
+      html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">');
+      
+      // 2. Жирный **текст**
+      html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      
+      // 3. Курсив *текст*
+      html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+      
+      // 4. Подчеркнутый __текст__
+      html = html.replace(/__(.*?)__/g, '<u>$1</u>');
+      
+      // 5. Ссылки [текст](url)
+      html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+      
+      // 6. Списки (если строка начинается с - или *)
+      html = html.replace(/^\s*[-*]\s+(.*)$/gm, '<li>$1</li>');
+      html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+      
+      // 7. Переносы строк (превращаем в абзацы)
+      html = html.split(/\n{2,}/).map(para => {
+        if (para.trim().startsWith('<ul>') || para.trim().startsWith('<img')) return para;
+        return `<p>${para.replace(/\n/g, '<br>')}</p>`;
+      }).join('');
+      
+      return html;
+    }
 
     // --- АВТОРИЗАЦИЯ ---
     function updateAuthUI() {
@@ -255,7 +303,6 @@
         newsArray.push({ id: doc.id, ...doc.data() });
       });
 
-      // Сортируем: новые сверху
       newsArray.sort((a, b) => b.createdAt - a.createdAt);
 
       newsArray.forEach(news => {
@@ -269,12 +316,14 @@
           `).join('');
         }
 
+        const parsedText = parseMarkdown(news.text);
+
         const card = document.createElement('div');
         card.className = 'news-card';
         card.innerHTML = `
           <div class="date">${news.date}</div>
           <h2>${news.title}</h2>
-          <p>${news.text}</p>
+          <div class="news-content">${parsedText}</div>
           
           <div class="comments-section">
             <h4 style="font-size: 0.9rem; margin-bottom: 10px; color: var(--muted);">Комментарии (${news.comments ? news.comments.length : 0}):</h4>
@@ -291,7 +340,6 @@
       });
     }
 
-    // Слушаем изменения в базе в реальном времени
     const q = query(newsCollection);
     onSnapshot(q, (snapshot) => {
       renderNewsList(snapshot);
