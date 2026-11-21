@@ -53,12 +53,12 @@
     .news-card {
       background: var(--card); border: 1px solid var(--border); border-radius: 16px;
       padding: 24px; margin-bottom: 16px; transition: transform 0.2s, border-color 0.2s;
+      position: relative;
     }
     .news-card:hover { border-color: rgba(255, 59, 59, 0.4); }
     .date { font-size: 0.85rem; color: var(--muted); margin-bottom: 8px; font-weight: 600; }
     .news-card h2 { font-size: 1.3rem; margin-bottom: 10px; color: var(--text); }
     
-    /* Стили для отформатированного текста в новостях */
     .news-content { color: var(--muted); font-size: 0.95rem; margin-bottom: 16px; line-height: 1.7; }
     .news-content p { margin-bottom: 10px; }
     .news-content strong { color: var(--text); font-weight: bold; }
@@ -91,6 +91,15 @@
     .add-news-form textarea { min-height: 150px; resize: vertical; }
     .hint { font-size: 0.8rem; color: var(--muted); margin-bottom: 15px; line-height: 1.4; }
     .hint code { background: rgba(255, 59, 59, 0.15); padding: 2px 4px; border-radius: 4px; font-family: monospace; }
+
+    .delete-btn {
+      position: absolute; top: 20px; right: 20px;
+      background: rgba(255, 59, 59, 0.1); border: 1px solid rgba(255, 59, 59, 0.3);
+      color: #ff8a8a; width: 32px; height: 32px; border-radius: 8px;
+      display: grid; place-items: center; cursor: pointer; transition: all 0.2s;
+      font-size: 1.1rem; z-index: 10;
+    }
+    .delete-btn:hover { background: rgba(255, 59, 59, 0.3); color: white; }
   </style>
 </head>
 <body>
@@ -111,12 +120,13 @@
     <!-- БЛОК АВТОРИЗАЦИИ -->
     <div id="authBox" class="auth-box">
       <div id="loginForm" style="display: flex; gap: 10px; flex-wrap: wrap; width: 100%;">
-        <input type="password" id="adminPassInput" class="auth-input" placeholder="Пароль админа" style="flex: 1; min-width: 150px;">
-        <button class="btn" onclick="loginAdmin()">Войти</button>
+        <input type="text" id="loginInput" class="auth-input" placeholder="Логин (admin или friend)" style="flex: 1; min-width: 120px;">
+        <input type="password" id="passInput" class="auth-input" placeholder="Пароль" style="flex: 1; min-width: 120px;">
+        <button class="btn" onclick="loginUser()">Войти</button>
       </div>
       <div id="loggedInView" class="user-greet" style="display: none;">
-        <span>Вы вошли как <b style="color: var(--accent1);">Админ</b></span>
-        <button class="btn btn-outline" onclick="logoutAdmin()">Выйти</button>
+        <span>Вы вошли как <b id="userRoleDisplay" style="color: var(--accent1);"></b></span>
+        <button class="btn btn-outline" onclick="logoutUser()">Выйти</button>
       </div>
     </div>
 
@@ -145,10 +155,10 @@
     </div>
   </div>
 
-  <!-- ПОДКЛЮЧАЕМ FIREBASE И ПАРСЕР MARKDOWN -->
+  <!-- ПОДКЛЮЧАЕМ FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, updateDoc, doc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, updateDoc, doc, arrayUnion, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAWpB5hZ6oDm89NxIR7d-yPZ2ST3efz8us",
@@ -164,52 +174,43 @@
     const db = getFirestore(app);
     const newsCollection = collection(db, "news");
 
-    const ADMIN_PASSWORD = "ltspst2026"; 
-    let isAdmin = localStorage.getItem('ltspst_admin') === 'true';
+    // НАСТРОЙКИ ДОСТУПА (МЕНЯЙ ЗДЕСЬ)
+    const ADMIN_LOGIN = "admin";
+    const ADMIN_PASSWORD = "admin2026"; 
+    
+    const FRIEND_LOGIN = "friend";
+    const FRIEND_PASSWORD = "friend2026";
 
-    // --- ПАРСЕР MARKDOWN (Превращает текст в HTML) ---
+    let currentRole = localStorage.getItem('ltspst_role') || null; // 'admin' или 'friend'
+
     function parseMarkdown(text) {
       if (!text) return '';
       let html = text;
-      
-      // 1. Картинки ![alt](url)
       html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">');
-      
-      // 2. Жирный **текст**
       html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-      
-      // 3. Курсив *текст*
       html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
-      
-      // 4. Подчеркнутый __текст__
       html = html.replace(/__(.*?)__/g, '<u>$1</u>');
-      
-      // 5. Ссылки [текст](url)
       html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
-      
-      // 6. Списки (если строка начинается с - или *)
       html = html.replace(/^\s*[-*]\s+(.*)$/gm, '<li>$1</li>');
       html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
-      
-      // 7. Переносы строк (превращаем в абзацы)
       html = html.split(/\n{2,}/).map(para => {
         if (para.trim().startsWith('<ul>') || para.trim().startsWith('<img')) return para;
         return `<p>${para.replace(/\n/g, '<br>')}</p>`;
       }).join('');
-      
       return html;
     }
 
-    // --- АВТОРИЗАЦИЯ ---
     function updateAuthUI() {
       const loginForm = document.getElementById('loginForm');
       const loggedInView = document.getElementById('loggedInView');
       const toggleAddBtn = document.getElementById('toggleAddBtn');
+      const roleDisplay = document.getElementById('userRoleDisplay');
 
-      if (isAdmin) {
+      if (currentRole) {
         loginForm.style.display = 'none';
         loggedInView.style.display = 'flex';
         toggleAddBtn.style.display = 'block';
+        roleDisplay.textContent = currentRole === 'admin' ? 'Админ' : 'Редактор';
       } else {
         loginForm.style.display = 'flex';
         loggedInView.style.display = 'none';
@@ -218,31 +219,36 @@
       }
     }
 
-    window.loginAdmin = () => {
-      const pass = document.getElementById('adminPassInput').value;
-      if (pass === ADMIN_PASSWORD) {
-        isAdmin = true;
-        localStorage.setItem('ltspst_admin', 'true');
-        document.getElementById('adminPassInput').value = '';
-        updateAuthUI();
-      } else {
-        alert('Неверный пароль!');
-      }
-    };
+    window.loginUser = () => {
+      const login = document.getElementById('loginInput').value.trim();
+      const pass = document.getElementById('passInput').value;
 
-    window.logoutAdmin = () => {
-      isAdmin = false;
-      localStorage.removeItem('ltspst_admin');
+      if (login === ADMIN_LOGIN && pass === ADMIN_PASSWORD) {
+        currentRole = 'admin';
+      } else if (login === FRIEND_LOGIN && pass === FRIEND_PASSWORD) {
+        currentRole = 'friend';
+      } else {
+        return alert('Неверный логин или пароль!');
+      }
+
+      localStorage.setItem('ltspst_role', currentRole);
+      document.getElementById('loginInput').value = '';
+      document.getElementById('passInput').value = '';
       updateAuthUI();
     };
 
-    // --- НОВОСТИ ---
+    window.logoutUser = () => {
+      currentRole = null;
+      localStorage.removeItem('ltspst_role');
+      updateAuthUI();
+    };
+
     window.toggleAddForm = () => {
       document.getElementById('addNewsForm').classList.toggle('active');
     };
 
     window.addNews = async () => {
-      if (!isAdmin) return alert('Только админ может добавлять новости!');
+      if (!currentRole) return alert('Войдите, чтобы добавлять новости!');
       
       const title = document.getElementById('newsTitle').value.trim();
       const text = document.getElementById('newsText').value.trim();
@@ -252,6 +258,7 @@
         await addDoc(newsCollection, {
           title: title,
           text: text,
+          author: currentRole === 'admin' ? 'Админ' : 'Редактор',
           date: new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }),
           createdAt: Date.now(),
           comments: []
@@ -263,6 +270,18 @@
       } catch (e) {
         console.error("Ошибка добавления: ", e);
         alert("Ошибка при добавлении. Проверь базу данных!");
+      }
+    };
+
+    window.deleteNews = async (id) => {
+      if (currentRole !== 'admin') return alert('Только Админ может удалять новости!');
+      if (!confirm('Точно удалить эту новость?')) return;
+      
+      try {
+        await deleteDoc(doc(db, "news", id));
+      } catch (e) {
+        console.error("Ошибка удаления: ", e);
+        alert("Не удалось удалить новость.");
       }
     };
 
@@ -288,7 +307,6 @@
       }
     };
 
-    // --- ОТРИСОВКА ---
     function renderNewsList(snapshot) {
       const container = document.getElementById('newsList');
       container.innerHTML = '';
@@ -317,11 +335,16 @@
         }
 
         const parsedText = parseMarkdown(news.text);
+        const deleteBtnHTML = currentRole === 'admin' 
+          ? `<button class="delete-btn" onclick="deleteNews('${news.id}')" title="Удалить новость">🗑</button>` 
+          : '';
+        const authorBadge = news.author ? `<span style="font-size: 0.75rem; background: rgba(255,59,59,0.1); padding: 2px 6px; border-radius: 4px; margin-left: 8px;">${news.author}</span>` : '';
 
         const card = document.createElement('div');
         card.className = 'news-card';
         card.innerHTML = `
-          <div class="date">${news.date}</div>
+          ${deleteBtnHTML}
+          <div class="date">${news.date} ${authorBadge}</div>
           <h2>${news.title}</h2>
           <div class="news-content">${parsedText}</div>
           
