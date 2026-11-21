@@ -62,12 +62,14 @@
     .comments-section { border-top: 1px solid var(--border); padding-top: 16px; margin-top: 16px; }
     .comment { background: rgba(0,0,0,0.2); padding: 12px; border-radius: 10px; margin-bottom: 10px; font-size: 0.9rem; }
     .comment-author { font-weight: bold; color: var(--accent2); margin-bottom: 4px; display: block; }
-    .comment-form { display: flex; gap: 10px; margin-top: 10px; }
+    .comment-form { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
     .comment-input {
-      flex: 1; background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+      background: rgba(0,0,0,0.3); border: 1px solid var(--border);
       color: white; padding: 8px 12px; border-radius: 8px; outline: none; font-family: inherit; font-size: 0.9rem;
     }
     .comment-input:focus { border-color: var(--accent1); }
+    .name-input { width: 120px; }
+    .text-input { flex: 1; min-width: 150px; }
 
     .add-news-form { display: none; background: var(--card); border: 1px solid var(--accent1); border-radius: 16px; padding: 20px; margin-bottom: 24px; }
     .add-news-form.active { display: block; }
@@ -77,6 +79,8 @@
     }
     .add-news-form input:focus, .add-news-form textarea:focus { border-color: var(--accent1); }
     .add-news-form textarea { min-height: 100px; resize: vertical; }
+    
+    .loading-text { color: var(--muted); text-align: center; padding: 20px; }
   </style>
 </head>
 <body>
@@ -94,15 +98,15 @@
       <button id="toggleAddBtn" class="btn" style="display: none;" onclick="toggleAddForm()">+ Добавить новость</button>
     </div>
 
-    <!-- БЛОК АВТОРИЗАЦИИ -->
+    <!-- БЛОК АВТОРИЗАЦИИ АДМИНА -->
     <div id="authBox" class="auth-box">
       <div id="loginForm" style="display: flex; gap: 10px; flex-wrap: wrap; width: 100%;">
-        <input type="text" id="usernameInput" class="auth-input" placeholder="Твой никнейм" style="flex: 1; min-width: 150px;">
-        <button class="btn" onclick="login()">Войти</button>
+        <input type="password" id="adminPassInput" class="auth-input" placeholder="Пароль админа" style="flex: 1; min-width: 150px;">
+        <button class="btn" onclick="loginAdmin()">Войти</button>
       </div>
       <div id="loggedInView" class="user-greet" style="display: none;">
-        <span>Привет, <b id="currentUser" style="color: var(--accent1);"></b>!</span>
-        <button class="btn btn-outline" onclick="logout()">Выйти</button>
+        <span>Вы вошли как <b style="color: var(--accent1);">Админ</b></span>
+        <button class="btn btn-outline" onclick="logoutAdmin()">Выйти</button>
       </div>
     </div>
 
@@ -118,23 +122,45 @@
     </div>
 
     <!-- СПИСОК НОВОСТЕЙ -->
-    <div id="newsList"></div>
+    <div id="newsList">
+      <div class="loading-text">Загрузка новостей...</div>
+    </div>
 
   </div>
 
-  <script>
-    let currentUser = localStorage.getItem('ltspst_user') || null;
+  <!-- ПОДКЛЮЧАЕМ FIREBASE -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, updateDoc, doc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+    const firebaseConfig = {
+      apiKey: "AIzaSyAWpB5hZ6oDm89NxIR7d-yPZ2ST3efz8us",
+      authDomain: "ltspst-site.firebaseapp.com",
+      projectId: "ltspst-site",
+      storageBucket: "ltspst-site.firebasestorage.app",
+      messagingSenderId: "497361846340",
+      appId: "1:497361846340:web:134d1b3737c9a800ce3c11",
+      measurementId: "G-5N2W3HQS20"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const newsCollection = collection(db, "news");
+
+    // ПАРОЛЬ ДЛЯ АДМИНА (можешь поменять на любой свой)
+    const ADMIN_PASSWORD = "ltspst2026"; 
+    
+    let isAdmin = localStorage.getItem('ltspst_admin') === 'true';
+
+    // --- АВТОРИЗАЦИЯ ---
     function updateAuthUI() {
       const loginForm = document.getElementById('loginForm');
       const loggedInView = document.getElementById('loggedInView');
       const toggleAddBtn = document.getElementById('toggleAddBtn');
-      const currentUserSpan = document.getElementById('currentUser');
 
-      if (currentUser) {
+      if (isAdmin) {
         loginForm.style.display = 'none';
         loggedInView.style.display = 'flex';
-        currentUserSpan.textContent = currentUser;
         toggleAddBtn.style.display = 'block';
       } else {
         loginForm.style.display = 'flex';
@@ -144,87 +170,95 @@
       }
     }
 
-    function login() {
-      const input = document.getElementById('usernameInput').value.trim();
-      if (input.length < 2) return alert('Введи никнейм (мин. 2 символа)');
-      currentUser = input;
-      localStorage.setItem('ltspst_user', currentUser);
-      document.getElementById('usernameInput').value = '';
-      updateAuthUI();
-    }
-
-    function logout() {
-      currentUser = null;
-      localStorage.removeItem('ltspst_user');
-      updateAuthUI();
-    }
-
-    let newsData = JSON.parse(localStorage.getItem('ltspst_news')) || [
-      {
-        id: 1,
-        date: '21 Ноября 2026',
-        title: 'Запуск официального сайта!',
-        text: 'Мы запустили обновленный сайт. Теперь все проекты и соцсети в одном месте. Спасибо, что вы с нами!',
-        comments: []
+    window.loginAdmin = () => {
+      const pass = document.getElementById('adminPassInput').value;
+      if (pass === ADMIN_PASSWORD) {
+        isAdmin = true;
+        localStorage.setItem('ltspst_admin', 'true');
+        document.getElementById('adminPassInput').value = '';
+        updateAuthUI();
+      } else {
+        alert('Неверный пароль!');
       }
-    ];
+    };
 
-    function saveNews() {
-      localStorage.setItem('ltspst_news', JSON.stringify(newsData));
-      renderNews();
-    }
+    window.logoutAdmin = () => {
+      isAdmin = false;
+      localStorage.removeItem('ltspst_admin');
+      updateAuthUI();
+    };
 
-    function toggleAddForm() {
-      const form = document.getElementById('addNewsForm');
-      form.classList.toggle('active');
-    }
+    // --- НОВОСТИ ---
+    window.toggleAddForm = () => {
+      document.getElementById('addNewsForm').classList.toggle('active');
+    };
 
-    function addNews() {
+    window.addNews = async () => {
+      if (!isAdmin) return alert('Только админ может добавлять новости!');
+      
       const title = document.getElementById('newsTitle').value.trim();
       const text = document.getElementById('newsText').value.trim();
-      
       if (!title || !text) return alert('Заполни заголовок и текст!');
 
-      const newNews = {
-        id: Date.now(),
-        date: new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }),
-        title: title,
-        text: text,
-        comments: []
-      };
-
-      newsData.unshift(newNews);
-      document.getElementById('newsTitle').value = '';
-      document.getElementById('newsText').value = '';
-      toggleAddForm();
-      saveNews();
-    }
-
-    function addComment(newsId) {
-      if (!currentUser) return alert('Войди, чтобы оставить комментарий!');
-      
-      const input = document.getElementById('commentInput_' + newsId);
-      const text = input.value.trim();
-      if (!text) return;
-
-      const newsItem = newsData.find(n => n.id === newsId);
-      if (newsItem) {
-        newsItem.comments.push({ author: currentUser, text: text });
-        input.value = '';
-        saveNews();
+      try {
+        await addDoc(newsCollection, {
+          title: title,
+          text: text,
+          date: new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }),
+          createdAt: Date.now(),
+          comments: []
+        });
+        
+        document.getElementById('newsTitle').value = '';
+        document.getElementById('newsText').value = '';
+        toggleAddForm();
+      } catch (e) {
+        console.error("Ошибка добавления: ", e);
+        alert("Ошибка при добавлении. Проверь базу данных!");
       }
-    }
+    };
 
-    function renderNews() {
+    window.addComment = async (newsId) => {
+      const nameInput = document.getElementById(`name_${newsId}`);
+      const textInput = document.getElementById(`text_${newsId}`);
+      
+      const name = nameInput.value.trim() || 'Гость';
+      const text = textInput.value.trim();
+      
+      if (!text) return alert('Напиши комментарий!');
+
+      try {
+        const newsDocRef = doc(db, "news", newsId);
+        await updateDoc(newsDocRef, {
+          comments: arrayUnion({ author: name, text: text, date: Date.now() })
+        });
+        nameInput.value = '';
+        textInput.value = '';
+      } catch (e) {
+        console.error("Ошибка комментария: ", e);
+        alert("Не удалось отправить комментарий.");
+      }
+    };
+
+    // --- ОТРИСОВКА ---
+    function renderNewsList(snapshot) {
       const container = document.getElementById('newsList');
       container.innerHTML = '';
 
-      if (newsData.length === 0) {
+      if (snapshot.empty) {
         container.innerHTML = '<p style="color: var(--muted);">Пока новостей нет.</p>';
         return;
       }
 
-      newsData.forEach(news => {
+      const newsArray = [];
+      snapshot.forEach((doc) => {
+        newsArray.push({ id: doc.id, ...doc.data() });
+      });
+
+      // Сортируем: новые сверху
+      newsArray.sort((a, b) => b.createdAt - a.createdAt);
+
+      newsArray.forEach(news => {
         let commentsHTML = '';
         if (news.comments && news.comments.length > 0) {
           commentsHTML = news.comments.map(c => `
@@ -235,13 +269,6 @@
           `).join('');
         }
 
-        const commentFormHTML = currentUser ? `
-          <div class="comment-form">
-            <input type="text" id="commentInput_${news.id}" class="comment-input" placeholder="Написать комментарий...">
-            <button class="btn" onclick="addComment(${news.id})" style="padding: 8px 15px;">➤</button>
-          </div>
-        ` : `<p style="font-size: 0.85rem; color: var(--muted); margin-top: 10px;">Войдите, чтобы оставить комментарий.</p>`;
-
         const card = document.createElement('div');
         card.className = 'news-card';
         card.innerHTML = `
@@ -251,16 +278,26 @@
           
           <div class="comments-section">
             <h4 style="font-size: 0.9rem; margin-bottom: 10px; color: var(--muted);">Комментарии (${news.comments ? news.comments.length : 0}):</h4>
-            <div id="commentsList_${news.id}">${commentsHTML}</div>
-            ${commentFormHTML}
+            <div>${commentsHTML}</div>
+            
+            <div class="comment-form">
+              <input type="text" id="name_${news.id}" class="comment-input name-input" placeholder="Твоё имя...">
+              <input type="text" id="text_${news.id}" class="comment-input text-input" placeholder="Комментарий...">
+              <button class="btn" onclick="addComment('${news.id}')" style="padding: 8px 15px;">➤</button>
+            </div>
           </div>
         `;
         container.appendChild(card);
       });
     }
 
+    // Слушаем изменения в базе в реальном времени
+    const q = query(newsCollection);
+    onSnapshot(q, (snapshot) => {
+      renderNewsList(snapshot);
+    });
+
     updateAuthUI();
-    renderNews();
   </script>
 </body>
 </html>
