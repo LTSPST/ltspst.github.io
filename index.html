@@ -6,17 +6,17 @@
   <title>LTSPST — Официальный сайт ютубера и разработчика</title>
   <meta name="description" content="Официальный сайт ютубера LTSPST. Все проекты, соцсети и приватный браузер LTSPST Internet Browser на движке Firefox для Android.">
   <meta name="keywords" content="LTSPST, ЛТСПСТ, ютубер LTSPST, LTSPST Internet Browser, проекты ЛТСПСТ">
-  
+
   <style>
     :root {
-      --bg: #0b0d14;
-      --card: #141824;
-      --card-hover: #1a2030;
-      --border: rgba(255, 255, 255, 0.08);
-      --text: #f3f4f6;
-      --muted: #9ca3af;
-      --accent1: #ff7139;
-      --accent2: #9059ff;
+      --bg: #120608;
+      --card: #1e0b0e;
+      --card-hover: #2a1114;
+      --border: rgba(255, 80, 80, 0.14);
+      --text: #f9f1f1;
+      --muted: #c9a5a5;
+      --accent1: #ff3b3b;
+      --accent2: #ff6b4a;
     }
 
     * {
@@ -27,7 +27,9 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: var(--bg);
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(255, 59, 59, 0.12), transparent 55%),
+        var(--bg);
       color: var(--text);
       line-height: 1.6;
       min-height: 100vh;
@@ -35,12 +37,12 @@
       flex-direction: column;
     }
 
-    /* ================= HEADER (ВЕРХНЯЯ ПАНЕЛЬ) ================= */
+    /* ================= HEADER ================= */
     .header {
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(11, 13, 20, 0.85);
+      background: rgba(18, 6, 8, 0.85);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
@@ -61,18 +63,17 @@
       letter-spacing: 0.5px;
     }
 
-    /* Иконка головы Майнкрафта */
     .header-logo img {
       width: 36px;
       height: 36px;
-      border-radius: 8px; /* Делает края скругленными, как у иконки */
+      border-radius: 8px;
       object-fit: cover;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 14px rgba(255, 59, 59, 0.35);
     }
 
     .header-nav {
       display: flex;
-      gap: 24px;
+      gap: 26px;
     }
 
     .header-nav a {
@@ -81,35 +82,66 @@
       font-weight: 600;
       font-size: 0.95rem;
       transition: color 0.2s;
+      position: relative;
+    }
+
+    .header-nav a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -4px;
+      width: 0;
+      height: 2px;
+      background: var(--accent1);
+      border-radius: 2px;
+      transition: width 0.25s ease;
     }
 
     .header-nav a:hover {
       color: var(--text);
     }
 
-    /* Кнопка бургер-меню (по умолчанию скрыта на ПК) */
+    .header-nav a:hover::after {
+      width: 100%;
+    }
+
+    /* Три точки на мобилке */
     .mobile-toggle {
       display: none;
       background: none;
       border: none;
       color: var(--text);
-      font-size: 1.8rem;
+      font-size: 1.6rem;
       cursor: pointer;
-      padding: 4px;
+      padding: 4px 10px;
       line-height: 1;
+      border-radius: 8px;
+      transition: background 0.2s;
     }
 
-    /* Выпадающее мобильное меню */
+    .mobile-toggle:hover {
+      background: rgba(255, 59, 59, 0.12);
+    }
+
+    /* Выпадающее меню */
     .mobile-menu {
       display: none;
       flex-direction: column;
       background: var(--card);
       position: absolute;
-      top: 100%;
-      left: 0;
-      width: 100%;
-      border-bottom: 1px solid var(--border);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+      top: calc(100% + 8px);
+      right: 16px;
+      min-width: 180px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+      overflow: hidden;
+      animation: menuIn 0.18s ease;
+    }
+
+    @keyframes menuIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
     .mobile-menu.active {
@@ -117,22 +149,25 @@
     }
 
     .mobile-menu a {
-      padding: 16px 24px;
+      padding: 14px 18px;
       color: var(--text);
       text-decoration: none;
       font-weight: 600;
+      font-size: 0.95rem;
       border-bottom: 1px solid var(--border);
+      transition: background 0.2s, color 0.2s;
     }
 
     .mobile-menu a:last-child {
       border-bottom: none;
     }
-    
+
     .mobile-menu a:hover {
       background: var(--card-hover);
+      color: #ff8a8a;
     }
 
-    /* ================= ОСНОВНОЙ КОНТЕНТ ================= */
+    /* ================= КОНТЕНТ ================= */
     .container {
       max-width: 720px;
       width: 100%;
@@ -153,9 +188,9 @@
       top: -10px;
       left: 50%;
       transform: translateX(-50%);
-      width: 220px;
-      height: 220px;
-      background: radial-gradient(circle, rgba(144, 89, 255, 0.25), rgba(255, 113, 57, 0.15), transparent 70%);
+      width: 240px;
+      height: 240px;
+      background: radial-gradient(circle, rgba(255, 59, 59, 0.28), rgba(255, 107, 74, 0.12), transparent 70%);
       z-index: -1;
       pointer-events: none;
     }
@@ -172,7 +207,7 @@
       font-size: 1.8rem;
       font-weight: 900;
       color: #fff;
-      box-shadow: 0 10px 25px rgba(144, 89, 255, 0.35);
+      box-shadow: 0 10px 30px rgba(255, 59, 59, 0.45);
       overflow: hidden;
     }
 
@@ -187,6 +222,10 @@
       font-weight: 900;
       letter-spacing: 0.5px;
       margin-bottom: 8px;
+      background: linear-gradient(90deg, #ff6b4a, #ff3b3b);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
     }
 
     .bio {
@@ -216,16 +255,30 @@
       color: #fff;
       background: var(--card);
       border: 1px solid var(--border);
-      transition: transform 0.2s, background 0.2s;
+      transition: transform 0.2s, background 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .social-btn svg {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      fill: currentColor;
     }
 
     .social-btn:hover {
-      transform: translateY(-2px);
+      transform: translateY(-3px);
       background: var(--card-hover);
+      box-shadow: 0 10px 25px rgba(255, 59, 59, 0.15);
     }
 
-    .social-btn.yt { border-color: rgba(255, 0, 51, 0.4); }
-    .social-btn.tg { border-color: rgba(38, 165, 228, 0.4); }
+    .social-btn.yt { border-color: rgba(255, 0, 51, 0.45); color: #ff6b81; }
+    .social-btn.yt:hover { border-color: #ff0033; }
+    .social-btn.tg { border-color: rgba(38, 165, 228, 0.45); color: #6ec9f5; }
+    .social-btn.tg:hover { border-color: #26a5e4; }
+    .social-btn.ds { border-color: rgba(88, 101, 242, 0.45); color: #8f9bff; }
+    .social-btn.ds:hover { border-color: #5865f2; }
+    .social-btn.gh { border-color: rgba(255, 255, 255, 0.2); color: #e0e0e0; }
+    .social-btn.gh:hover { border-color: #fff; }
 
     .section-title {
       font-size: 1.15rem;
@@ -240,18 +293,19 @@
       display: block;
       text-decoration: none;
       color: var(--text);
-      background: linear-gradient(145deg, #171c2b, #121520);
-      border: 1px solid rgba(255, 113, 57, 0.35);
+      background: linear-gradient(145deg, #220d10, #160709);
+      border: 1px solid rgba(255, 59, 59, 0.35);
       border-radius: 20px;
       padding: 24px;
       margin-bottom: 16px;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
-      transition: transform 0.2s, border-color 0.2s;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
     }
 
     .project-card:hover {
       transform: translateY(-3px);
       border-color: var(--accent1);
+      box-shadow: 0 16px 40px rgba(255, 59, 59, 0.2);
     }
 
     .project-tag {
@@ -260,8 +314,8 @@
       font-weight: 700;
       padding: 4px 10px;
       border-radius: 8px;
-      background: rgba(255, 113, 57, 0.15);
-      color: #ff986e;
+      background: rgba(255, 59, 59, 0.15);
+      color: #ff8a8a;
       margin-bottom: 10px;
     }
 
@@ -281,7 +335,7 @@
       align-items: center;
       font-weight: 700;
       font-size: 0.95rem;
-      color: #ff986e;
+      color: #ff8a8a;
     }
 
     footer {
@@ -292,55 +346,51 @@
       font-size: 0.85rem;
     }
 
-    /* ================= МЕДИА-ЗАПРОСЫ (ДЛЯ ТЕЛЕФОНОВ) ================= */
+    footer a {
+      color: #ff8a8a;
+      text-decoration: none;
+    }
+
+    /* ================= МОБИЛЬНАЯ ВЕРСИЯ ================= */
     @media (max-width: 768px) {
       .header-nav {
-        display: none; /* Скрываем обычное меню на телефонах */
+        display: none;
       }
-      
+
       .mobile-toggle {
-        display: block; /* Показываем кнопку с тремя полосками */
-      }
-      
-      /* Делаем так, чтобы выпадающее меню позиционировалось относительно хедера */
-      .header {
-        position: sticky;
+        display: block;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- ВЕРХНЯЯ ПАНЕЛЬ С ЛОГОТИПОМ И МЕНЮ -->
   <header class="header">
-    <!-- Логотип -->
     <a href="/" class="header-logo">
-      <!-- ВАЖНО: замените "logo.png" на реальный путь к вашей картинке, если она в другой папке -->
       <img src="logo.png" alt="Логотип LTSPST">
       LTSPST
     </a>
 
-    <!-- Меню для ПК -->
+    <!-- Меню для ПК: все пункты в строке -->
     <nav class="header-nav">
-      <a href="#news">Новости</a>
+      <a href="https://ltspst.github.io/news">Новости</a>
+      <a href="https://ltspst.github.io/projects">Проекты</a>
       <a href="#server">Сервер</a>
-      <a href="#programs">Программы</a>
     </nav>
 
-    <!-- Кнопка для мобильных (три полоски) -->
+    <!-- Три точки для мобильных -->
     <button class="mobile-toggle" aria-label="Открыть меню" id="burgerBtn">
-      ☰
+      ⋮
     </button>
 
     <!-- Выпадающее меню для мобильных -->
     <div class="mobile-menu" id="mobileMenu">
-      <a href="#news">Новости</a>
+      <a href="https://ltspst.github.io/news">Новости</a>
+      <a href="https://ltspst.github.io/projects">Проекты</a>
       <a href="#server">Сервер</a>
-      <a href="#programs">Программы</a>
     </div>
   </header>
 
-  <!-- ОСНОВНОЙ КОНТЕНТ -->
   <div class="container">
     <div class="profile">
       <div class="avatar">
@@ -351,20 +401,31 @@
     </div>
 
     <div class="social-grid">
-      <a href="ССЫЛКА_НА_YOUTUBE" class="social-btn yt" target="_blank">
-        ▶ YouTube канал
+      <a href="https://youtube.com/@ltspst_official?si=Fn5YTerh1Dp5nvVa" class="social-btn yt" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31.4 31.4 0 0 0 0 12a31.4 31.4 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31.4 31.4 0 0 0 24 12a31.4 31.4 0 0 0-.5-5.8zM9.6 15.6V8.4L15.8 12l-6.2 3.6z"/></svg>
+        YouTube
       </a>
-      <a href="ССЫЛКА_НА_TELEGRAM" class="social-btn tg" target="_blank">
-        ✈ Telegram канал
+
+      <a href="https://t.me/LTSPST_official" class="social-btn tg" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.9 4.3l-3.3 15.6c-.2 1.1-.9 1.3-1.8.8l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5.1 9.3-8.4c.4-.4-.1-.6-.6-.2L6.4 13.2l-4.9-1.5c-1.1-.3-1.1-1 .2-1.5l19.2-7.4c.9-.3 1.6.2 1.3 1.5z"/></svg>
+        Telegram
       </a>
-      <a href="ССЫЛКА_НА_GITHUB" class="social-btn" target="_blank">
-        💻 GitHub профиль
+
+      <a href="https://t.me/LTSPST_servers" class="social-btn tg" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.9 4.3l-3.3 15.6c-.2 1.1-.9 1.3-1.8.8l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5.1 9.3-8.4c.4-.4-.1-.6-.6-.2L6.4 13.2l-4.9-1.5c-1.1-.3-1.1-1 .2-1.5l19.2-7.4c.9-.3 1.6.2 1.3 1.5z"/></svg>
+        Сервер TG
+      </a>
+
+      <a href="https://discord.gg/8HWQ5byA4g" class="social-btn ds" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.2.5a18.3 18.3 0 0 1 4.3 1.5 15.4 15.4 0 0 0-13 0A18.3 18.3 0 0 1 10.8 3.5L10.6 3a19.8 19.8 0 0 0-4.9 1.4C2.6 9 1.8 13.5 2.2 17.9a19.9 19.9 0 0 0 6 3l.5-.8a13 13 0 0 1-2-1l.5-.4a14.2 14.2 0 0 0 12.1 0l.5.4a13 13 0 0 1-2 1l.5.8a19.9 19.9 0 0 0 6-3c.5-5.1-.8-9.6-3.5-13.5zM8.7 15.3c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4zm6.6 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4z"/></svg>
+        Discord
+      </a>
+
+      <a href="https://github.com/LTSPST" class="social-btn gh" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.9 10.9c.6.1.8-.2.8-.5v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.2c0 .3.2.6.8.5A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5z"/></svg>
+        GitHub
       </a>
     </div>
-
-    <!-- Блоки, к которым ведут ссылки из меню (можно переименовать/добавить контент) -->
-    <div id="news" class="section-title" style="margin-top: 40px;">Новости</div>
-    <p style="color: var(--muted); margin-bottom: 30px;">Здесь скоро появятся последние новости.</p>
 
     <div id="programs" class="section-title">Мои проекты</div>
 
@@ -380,31 +441,21 @@
     © 2026 LTSPST. Официальный сайт.
   </footer>
 
-  <!-- СКРИПТ ДЛЯ РАБОТЫ МОБИЛЬНОГО МЕНЮ -->
   <script>
     const burgerBtn = document.getElementById('burgerBtn');
     const mobileMenu = document.getElementById('mobileMenu');
 
     burgerBtn.addEventListener('click', () => {
       mobileMenu.classList.toggle('active');
-      
-      // Меняем иконку (полоски на крестик и обратно)
-      if (mobileMenu.classList.contains('active')) {
-        burgerBtn.textContent = '✕';
-      } else {
-        burgerBtn.textContent = '☰';
-      }
+      burgerBtn.textContent = mobileMenu.classList.contains('active') ? '✕' : '⋮';
     });
 
-    // Закрываем меню при клике на ссылку (чтобы оно не висело открытым)
-    const menuLinks = mobileMenu.querySelectorAll('a');
-    menuLinks.forEach(link => {
+    document.querySelectorAll('#mobileMenu a').forEach(link => {
       link.addEventListener('click', () => {
         mobileMenu.classList.remove('active');
-        burgerBtn.textContent = '☰';
+        burgerBtn.textContent = '⋮';
       });
     });
   </script>
-
 </body>
 </html>
