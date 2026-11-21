@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LTSPST Land — сервер Minecraft</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0d12;
+    --bg-soft: #141821;
+    --card: #181c26;
+    --border: rgba(255, 255, 255, 0.08);
+    --text: #e8ebf2;
+    --muted: #9aa3b5;
+    --accent: #7c5cff;
+    --accent-2: #22d3ee;
+    --grad: linear-gradient(135deg, #7c5cff 0%, #22d3ee 100%);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .bg-glow {
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(124, 92, 255, 0.25), transparent 40%),
+      radial-gradient(circle at 80% 30%, rgba(34, 211, 238, 0.18), transparent 40%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 0;
+  }
+
+  .brand {
+    font-weight: 800;
+    font-size: 20px;
+    letter-spacing: 0.5px;
+    background: var(--grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    margin-left: 24px;
+    font-size: 15px;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  .hero {
+    text-align: center;
+    padding: 90px 0 70px;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--bg-soft);
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 26px;
+  }
+
+  h1 {
+    font-size: clamp(40px, 7vw, 68px);
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    line-height: 1.05;
+  }
+
+  .hero h1 span {
+    background: var(--grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .hero p.lead {
+    margin: 22px auto 0;
+    max-width: 580px;
+    color: var(--muted);
+    font-size: 18px;
+  }
+
+  .hero-actions {
+    margin-top: 36px;
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-family: inherit;
+    transition: transform 0.15s, background 0.2s, border-color 0.2s;
+  }
+  .btn:hover { transform: translateY(-2px); }
+
+  .btn-primary {
+    background: var(--grad);
+    color: #fff;
+    box-shadow: 0 10px 30px rgba(124, 92, 255, 0.35);
+  }
+
+  .btn-ghost {
+    background: var(--bg-soft);
+    color: var(--text);
+    border-color: var(--border);
+  }
+  .btn-ghost:hover { border-color: rgba(255,255,255,0.2); }
+
+  .ip-card {
+    max-width: 620px;
+    margin: 60px auto 0;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 24px;
+    text-align: left;
+  }
+
+  .ip-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 16px;
+    background: var(--bg-soft);
+    border-radius: 12px;
+    margin-top: 12px;
+  }
+  .ip-row:first-child { margin-top: 0; }
+
+  .ip-label {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .ip-value {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 15px;
+    color: var(--accent-2);
+    word-break: break-all;
+  }
+
+  .copy-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+    transition: background 0.2s;
+  }
+  .copy-btn:hover { background: rgba(255,255,255,0.06); }
+
+  .copy-status {
+    text-align: center;
+    font-size: 13px;
+    color: var(--accent-2);
+    min-height: 18px;
+    margin-top: 12px;
+  }
+
+  section { padding: 60px 0; }
+
+  .section-title {
+    text-align: center;
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 40px;
+  }
+
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 18px;
+  }
+
+  .feature {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .feature:hover {
+    transform: translateY(-4px);
+    border-color: rgba(124, 92, 255, 0.4);
+  }
+
+  .feature .icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: var(--grad);
+    display: grid;
+    place-items: center;
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+
+  .feature h3 {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .feature p {
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .versions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 18px;
+  }
+
+  .version {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    text-align: center;
+  }
+
+  .version .label {
+    font-size: 13px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .version .value {
+    font-size: 22px;
+    font-weight: 700;
+    margin-top: 8px;
+  }
+
+  .cta {
+    text-align: center;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 56px 24px;
+  }
+
+  .cta h2 {
+    font-size: 28px;
+    margin-bottom: 10px;
+  }
+
+  .cta p {
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+
+  .btn-tg {
+    background: #229ed9;
+    color: #fff;
+  }
+  .btn-tg:hover { background: #2aaee9; }
+
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+    padding: 40px 0 50px;
+  }
+
+  @media (max-width: 720px) {
+    .nav-links { display: none; }
+    .hero { padding: 60px 0 50px; }
+    .ip-row { flex-direction: column; align-items: stretch; text-align: center; }
+  }
+</style>
+</head>
+<body>
+<div class="bg-glow"></div>
+
+<div class="container">
+  <nav>
+    <div class="brand">LTSPST</div>
+    <div class="nav-links">
+      <a href="#features">Возможности</a>
+      <a href="#versions">Версии</a>
+      <a href="#connect">Подключение</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="badge">Minecraft 1.7.2-26.3 · Выживание</div>
+    <h1>Уютный сервер<br><span>для выживания</span></h1>
+    <p class="lead">Экономика, работы, киты, приваты территорий и адекватная администрация. Строй базы и играй с друзьями.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="#connect">Подключиться</a>
+      <a class="btn btn-ghost" href="https://t.me/LTSPST_srv" target="_blank" rel="noopener">Новости</a>
+    </div>
+
+    <div class="ip-card" id="connect">
+      <div class="ip-row">
+        <div>
+          <div class="ip-label">Java Edition</div>
+          <div class="ip-value">LTSPST_YT.aternos.me:27924</div>
+        </div>
+        <button class="copy-btn" onclick="copyText('LTSPST_YT.aternos.me:57480')">Копировать</button>
+      </div>
+      <div class="ip-row">
+        <div>
+          <div class="ip-label">Bedrock Edition</div>
+          <div class="ip-value">Поддержка временно отключена</div>
+        </div>
+        <button class="copy-btn" onclick="copyText('LTSPST_YT.aternos.me')">Копировать</button>
+      </div>
+      <div class="copy-status" id="copy-status"></div>
+    </div>
+  </header>
+
+  <section id="features">
+    <h2 class="section-title">Что есть на сервере</h2>
+    <div class="features">
+      <div class="feature">
+        <div class="icon">⚔</div>
+        <h3>Выживание</h3>
+        <p>Классический режим без лишних правил.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">💰</div>
+        <h3>Экономика и магазин</h3>
+        <p>Зарабатывай деньги и покупай то, что нужно.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">🛠</div>
+        <h3>Работы (Jobs)</h3>
+        <p>Выбирай профессию и развивайся в ней.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">🎁</div>
+        <h3>Киты</h3>
+        <p>Стартовый набор для новичков и бонусы.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">🏠</div>
+        <h3>Приваты территорий</h3>
+        <p>Защищай свою базу от посторонних.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">📊</div>
+        <h3>Удобный скорборд</h3>
+        <p>Вся важная информация всегда на виду.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">🛡</div>
+        <h3>Адекватная администрация</h3>
+        <p>Быстрая помощь и честная модерация.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">🔄</div>
+        <h3>Регулярные обновления</h3>
+        <p>Сервер развивается и становится лучше.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="versions">
+    <h2 class="section-title">Версии и режим</h2>
+    <div class="versions">
+      <div class="version">
+        <div class="label">Java Edition</div>
+        <div class="value">1.7.x – 26.3</div>
+      </div>
+      <div class="version">
+        <div class="label">Bedrock Edition</div>
+        <div class="value">26.0 – 26.x</div>
+      </div>
+      <div class="version">
+        <div class="label">Режим</div>
+        <div class="value">Выживание</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="cta">
+      <h2>Следи за новостями</h2>
+      <p>Обновления, события и объявления — в нашем Telegram.</p>
+      <div class="hero-actions">
+        <a class="btn btn-tg" href="https://t.me/LTSPST_servers" target="_blank" rel="noopener">Новости сервера</a>
+        <a class="btn btn-ghost" href="https://t.me/LTSPST_servers" target="_blank" rel="noopener">Telegram-канал</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>Ждём тебя на LTSPST Land</footer>
+</div>
+
+<script>
+  function copyText(text) {
+    const status = document.getElementById('copy-status');
+    const done = () => {
+      status.textContent = 'Скопировано: ' + text;
+      setTimeout(() => status.textContent = '', 2500);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(done);
+    } else {
+      done();
+    }
+  }
+</script>
+</body>
+  </html>
