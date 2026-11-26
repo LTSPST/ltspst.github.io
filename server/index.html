@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LTSPST Land — сервер Minecraft</title>
+<title>Донат — LTSPST Land</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -22,7 +22,6 @@
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
   html { scroll-behavior: smooth; }
 
   body {
@@ -30,16 +29,12 @@
     background: var(--bg);
     color: var(--text);
     line-height: 1.8;
-    -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
     position: relative;
   }
 
-  /* ——— Сетка на фоне ——— */
   .bg-grid {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
+    position: fixed; inset: 0; z-index: 0;
     background-image:
       linear-gradient(rgba(124, 92, 255, 0.10) 1px, transparent 1px),
       linear-gradient(90deg, rgba(124, 92, 255, 0.10) 1px, transparent 1px);
@@ -48,26 +43,19 @@
   }
 
   .bg-glow {
-    position: fixed;
-    inset: 0;
+    position: fixed; inset: 0;
     background:
       radial-gradient(circle at 20% 10%, rgba(124, 92, 255, 0.25), transparent 40%),
       radial-gradient(circle at 80% 30%, rgba(34, 211, 238, 0.18), transparent 40%);
-    pointer-events: none;
-    z-index: 0;
+    pointer-events: none; z-index: 0;
   }
 
-  /* ——— Снег ——— */
   #snow-canvas {
-    position: fixed;
-    inset: 0;
-    z-index: 1;
-    pointer-events: none;
+    position: fixed; inset: 0; z-index: 1; pointer-events: none;
   }
 
   .container {
-    position: relative;
-    z-index: 2;
+    position: relative; z-index: 2;
     max-width: 1080px;
     margin: 0 auto;
     padding: 0 24px;
@@ -75,395 +63,88 @@
 
   /* ——— Навигация ——— */
   nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 22px 0;
-    position: relative;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 0; position: relative;
   }
 
   .brand {
     font-family: var(--pixel-font);
-    font-weight: 400;
-    font-size: 16px;
-    letter-spacing: 1px;
+    font-size: 16px; letter-spacing: 1px;
     background: var(--grad);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+    text-decoration: none;
     text-shadow: 0 0 18px rgba(124, 92, 255, 0.35);
   }
 
-  .nav-links {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-  }
+  .nav-links { display: flex; align-items: center; gap: 24px; }
   .nav-links a {
-    color: var(--muted);
-    text-decoration: none;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 10px;
-    transition: color 0.2s;
-    letter-spacing: 0.5px;
+    color: var(--muted); text-decoration: none;
+    font-size: 10px; transition: color 0.2s; letter-spacing: 0.5px;
   }
-  .nav-links a:hover { color: var(--text); }
+  .nav-links a:hover, .nav-links a.active { color: var(--text); }
 
-  /* ——— Три точки (бургер) ——— */
+  /* ——— Бургер ——— */
   .menu-toggle {
-    display: none;
-    flex-direction: column;
-    justify-content: center;
-    gap: 5px;
-    width: 40px;
-    height: 40px;
-    background: var(--bg-soft);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    cursor: pointer;
-    padding: 0 9px;
-    transition: border-color 0.2s;
-    z-index: 20;
+    display: none; flex-direction: column; justify-content: center; gap: 5px;
+    width: 40px; height: 40px;
+    background: var(--bg-soft); border: 1px solid var(--border);
+    border-radius: 10px; cursor: pointer; padding: 0 9px;
+    transition: border-color 0.2s; z-index: 20;
   }
   .menu-toggle:hover { border-color: rgba(124, 92, 255, 0.5); }
   .menu-toggle span {
-    display: block;
-    height: 2px;
-    width: 100%;
-    background: var(--text);
-    border-radius: 2px;
+    display: block; height: 2px; width: 100%;
+    background: var(--text); border-radius: 2px;
     transition: transform 0.25s, opacity 0.25s;
   }
   .menu-toggle.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
   .menu-toggle.active span:nth-child(2) { opacity: 0; }
   .menu-toggle.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
+  /* ——— Выезжающее меню справа ——— */
   .mobile-menu {
-    display: none;
-    position: absolute;
-    top: 72px;
-    right: 0;
+    position: fixed; top: 0; right: -280px;
+    width: 280px; height: 100vh;
     background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 18px 22px;
-    flex-direction: column;
-    gap: 16px;
-    z-index: 15;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-    min-width: 220px;
+    border-left: 1px solid var(--border);
+    box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+    display: flex; flex-direction: column;
+    padding: 80px 24px 24px; gap: 20px;
+    z-index: 15; transition: right 0.3s ease-in-out;
   }
-  .mobile-menu.open { display: flex; }
+  .mobile-menu.open { right: 0; }
   .mobile-menu a {
-    color: var(--muted);
-    text-decoration: none;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 10px;
+    color: var(--muted); text-decoration: none;
+    font-size: 12px; padding: 10px 0;
+    border-bottom: 1px solid var(--border);
     transition: color 0.2s;
   }
-  .mobile-menu a:hover { color: var(--text); }
+  .mobile-menu a:hover, .mobile-menu a.active { color: var(--text); }
 
-  /* ——— Hero ——— */
-  .hero {
-    text-align: center;
-    padding: 70px 0 70px;
+  .overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 14; opacity: 0; pointer-events: none;
+    transition: opacity 0.3s;
   }
+  .overlay.open { opacity: 1; pointer-events: auto; }
 
-  .badge {
-    display: inline-block;
-    padding: 6px 14px;
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    background: var(--bg-soft);
-    color: var(--muted);
-    font-family: 'Press Start 2P', monospace;
-    font-size: 8px;
-    margin-bottom: 26px;
-  }
+  /* ——— Контент ——— */
+  .page-content { padding: 60px 0 80px; text-align: center; }
 
-  h1 {
-    font-family: 'Press Start 2P', monospace;
-    font-size: clamp(22px, 5vw, 42px);
-    font-weight: 400;
-    letter-spacing: 1px;
-    line-height: 1.6;
-    text-shadow: 0 0 24px rgba(124, 92, 255, 0.25);
-  }
-
-  .hero h1 span {
-    background: var(--grad);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-
-  .hero p.lead {
-    margin: 22px auto 0;
-    max-width: 640px;
-    color: var(--muted);
-    font-family: 'Press Start 2P', monospace;
-    font-size: 10px;
-    line-height: 2;
-  }
-
-  .hero-actions {
-    margin-top: 36px;
-    display: flex;
-    gap: 14px;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 14px 24px;
-    border-radius: 12px;
-    font-weight: 400;
-    font-size: 10px;
-    text-decoration: none;
-    border: 1px solid transparent;
-    cursor: pointer;
-    font-family: 'Press Start 2P', monospace;
-    transition: transform 0.15s, background 0.2s, border-color 0.2s;
-    letter-spacing: 0.5px;
-    line-height: 1.4;
-  }
-  .btn:hover { transform: translateY(-2px); }
-
-  .btn-primary {
-    background: var(--grad);
-    color: #fff;
-    box-shadow: 0 10px 30px rgba(124, 92, 255, 0.35);
-  }
-
-  .btn-ghost {
-    background: var(--bg-soft);
-    color: var(--text);
-    border-color: var(--border);
-  }
-  .btn-ghost:hover { border-color: rgba(255,255,255,0.2); }
-
-  .btn-tg {
-    background: #229ed9;
-    color: #fff;
-  }
-  .btn-tg:hover { background: #2aaee9; }
-
-  /* ——— IP-карточка ——— */
-  .ip-card {
-    max-width: 640px;
-    margin: 60px auto 0;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 24px;
-    text-align: left;
-  }
-
-  .ip-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 14px 16px;
-    background: var(--bg-soft);
-    border-radius: 12px;
-    margin-top: 12px;
-  }
-  .ip-row:first-child { margin-top: 0; }
-
-  .ip-label {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 8px;
-    color: var(--muted);
-    margin-bottom: 6px;
-  }
-
-  .ip-value {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 9px;
-    color: var(--accent-2);
-    word-break: break-all;
-    line-height: 1.6;
-  }
-
-  .copy-btn {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 8px 14px;
-    border-radius: 8px;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 8px;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background 0.2s;
-    line-height: 1.4;
-  }
-  .copy-btn:hover { background: rgba(255,255,255,0.06); }
-
-  .copy-status {
-    text-align: center;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 8px;
-    color: var(--accent-2);
-    min-height: 18px;
-    margin-top: 14px;
-  }
-
-  /* ——— Секции ——— */
-  section { padding: 60px 0; }
-
-  .section-title {
-    text-align: center;
-    font-family: 'Press Start 2P', monospace;
+  .page-title {
     font-size: clamp(16px, 3vw, 22px);
-    font-weight: 400;
-    letter-spacing: 0.5px;
     margin-bottom: 40px;
     text-shadow: 0 0 20px rgba(34, 211, 238, 0.2);
   }
 
-  /* ——— Фичи ——— */
-  .features {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-    gap: 18px;
-  }
-
-  .feature {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 24px;
-    transition: transform 0.2s, border-color 0.2s;
-  }
-  .feature:hover {
-    transform: translateY(-4px);
-    border-color: rgba(124, 92, 255, 0.4);
-  }
-
-  .feature .icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 12px;
-    background: var(--grad);
-    display: grid;
-    place-items: center;
-    font-size: 20px;
-    margin-bottom: 16px;
-  }
-
-  .feature h3 {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 11px;
-    font-weight: 400;
-    margin-bottom: 10px;
-    line-height: 1.5;
-  }
-
-  .feature p {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 9px;
-    color: var(--muted);
-    line-height: 1.9;
-  }
-
-  /* ——— Версии ——— */
-  .versions {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 18px;
-  }
-
-  .version {
-    background: var(--bg-soft);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 28px;
-    text-align: center;
-  }
-
-  .version .label {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 8px;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-
-  .version .value {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 12px;
-    font-weight: 400;
-    margin-top: 12px;
-    line-height: 1.5;
-  }
-
-  /* ——— Скриншоты ——— */
-  .screens-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 18px;
-  }
-
-  .screen-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    overflow: hidden;
-    transition: transform 0.2s, border-color 0.2s;
-  }
-  .screen-card:hover {
-    transform: translateY(-4px);
-    border-color: rgba(34, 211, 238, 0.4);
-  }
-
-  .screen-card .img-wrap {
-    position: relative;
-    padding-top: 62%;
-    background: var(--bg-soft);
-  }
-  .screen-card .img-wrap img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    image-rendering: pixelated;
-  }
-  .screen-card .img-placeholder {
-    position: absolute;
-    inset: 0;
-    display: grid;
-    place-items: center;
-    color: var(--muted);
-    font-family: 'Press Start 2P', monospace;
-    font-size: 8px;
-    text-align: center;
-    padding: 12px;
-    background: repeating-linear-gradient(
-      45deg,
-      rgba(124,92,255,0.06) 0 10px,
-      transparent 10px 20px
-    );
-  }
-  .screen-card .caption {
-    padding: 14px 18px;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 8px;
-    color: var(--muted);
-    border-top: 1px solid var(--border);
-    line-height: 1.8;
-  }
-
-  /* ——— Донат / Правила / Модерация ——— */
   .three-col {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 18px;
+    text-align: left;
   }
 
   .info-card {
@@ -479,10 +160,7 @@
   }
 
   .info-card h3 {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 12px;
-    margin-bottom: 18px;
-    line-height: 1.6;
+    font-size: 12px; margin-bottom: 18px;
     background: var(--grad);
     -webkit-background-clip: text;
     background-clip: text;
@@ -491,327 +169,158 @@
 
   .info-card ul {
     list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+    display: flex; flex-direction: column; gap: 12px;
   }
   .info-card li {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 8px;
-    color: var(--muted);
+    font-size: 9px; color: var(--muted);
+    padding-left: 16px; position: relative;
     line-height: 1.9;
-    padding-left: 16px;
-    position: relative;
   }
   .info-card li::before {
-    content: '>';
-    position: absolute;
-    left: 0;
+    content: '>'; position: absolute; left: 0;
     color: var(--accent-2);
-    font-size: 8px;
   }
 
+  /* ——— Картинки ——— */
+  .img-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 40px;
+  }
+  .img-gallery img {
+    width: 100%;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    display: block;
+    image-rendering: pixelated;
+  }
+
+  .btn-center { margin-top: 30px; }
+
   .donate-tag {
-    display: inline-block;
-    margin-top: 16px;
-    padding: 8px 14px;
-    border-radius: 8px;
-    background: var(--grad);
-    color: #fff;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 8px;
-    text-decoration: none;
+    display: inline-block; margin-top: 20px;
+    padding: 12px 20px; border-radius: 8px;
+    background: var(--grad); color: #fff;
+    font-size: 10px; text-decoration: none;
     transition: transform 0.15s, box-shadow 0.2s;
-    line-height: 1.5;
   }
   .donate-tag:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(124, 92, 255, 0.4);
   }
 
-  /* ——— CTA ——— */
-  .cta {
-    text-align: center;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 56px 24px;
-  }
-
-  .cta h2 {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 16px;
-    margin-bottom: 16px;
-    line-height: 1.7;
-  }
-
-  .cta p {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 9px;
-    color: var(--muted);
-    margin-bottom: 28px;
-    line-height: 1.9;
-  }
-
   footer {
-    text-align: center;
-    color: var(--muted);
-    font-family: 'Press Start 2P', monospace;
-    font-size: 8px;
-    padding: 40px 0 50px;
-    line-height: 1.9;
+    text-align: center; color: var(--muted);
+    font-size: 8px; padding: 40px 0 50px;
   }
 
-  /* ——— Адаптив ——— */
   @media (max-width: 720px) {
     .nav-links { display: none; }
     .menu-toggle { display: flex; }
-    .hero { padding: 50px 0 50px; }
-    .ip-row { flex-direction: column; align-items: stretch; text-align: center; }
-    .ip-row .ip-value { font-size: 8px; }
-    h1 { font-size: clamp(18px, 6vw, 26px); }
-    .section-title { font-size: clamp(13px, 4vw, 18px); }
-    .feature h3 { font-size: 10px; }
-    .feature p { font-size: 8px; }
   }
 </style>
 </head>
 <body>
-
-<!-- Сетка -->
 <div class="bg-grid"></div>
 <div class="bg-glow"></div>
-<!-- Снег -->
 <canvas id="snow-canvas"></canvas>
 
 <div class="container">
   <nav>
-    <div class="brand">LTSPST</div>
-
-    <!-- ПК-навигация (без точек) -->
+    <a href="../index.html" class="brand">LTSPST</a>
     <div class="nav-links">
-      <a href="#donate">Донат</a>
-      <a href="#rules">Правила</a>
-      <a href="#moderation">Модерация</a>
+      <a href="../donate/" class="active">Донат</a>
+      <a href="../rules/">Правила</a>
+      <a href="../moders/">Модерация</a>
     </div>
-
-    <!-- Три точки для телефонов -->
     <button class="menu-toggle" id="menuToggle" aria-label="Меню">
       <span></span><span></span><span></span>
     </button>
-
-    <!-- Мобильное меню -->
     <div class="mobile-menu" id="mobileMenu">
-      <a href="#donate">Донат</a>
-      <a href="#rules">Правила</a>
-      <a href="#moderation">Модерация</a>
+      <a href="../index.html">Главная</a>
+      <a href="../donate/" class="active">Донат</a>
+      <a href="../rules/">Правила</a>
+      <a href="../moders/">Модерация</a>
     </div>
   </nav>
 
-  <header class="hero">
-    <div class="badge">Minecraft 1.7.2-26.3 · Выживание</div>
-    <h1>Уютный сервер<br><span>для выживания</span></h1>
-    <p class="lead">Экономика, работы, киты, приваты территорий и адекватная администрация. Строй базы и играй с друзьями.</p>
-    <div class="hero-actions">
-      <a class="btn btn-primary" href="#connect">Подключиться</a>
-      <a class="btn btn-ghost" href="https://t.me/LTSPST_srv" target="_blank" rel="noopener">Новости</a>
-    </div>
-
-    <div class="ip-card" id="connect">
-      <div class="ip-row">
-        <div>
-          <div class="ip-label">Java Edition</div>
-          <div class="ip-value">LTSPST.aternos.me:57480</div>
-        </div>
-        <button class="copy-btn" onclick="copyText('LTSPST_YT.aternos.me:57480')">Копировать</button>
-      </div>
-      <div class="ip-row">
-        <div>
-          <div class="ip-label">Bedrock Edition</div>
-          <div class="ip-value">Поддержка временно отключена</div>
-        </div>
-        <button class="copy-btn" onclick="copyText('LTSPST_YT.aternos.me')">Копировать</button>
-      </div>
-      <div class="copy-status" id="copy-status"></div>
-    </div>
-  </header>
-
-  <!-- Возможности -->
-  <section id="features">
-    <h2 class="section-title">Что есть на сервере</h2>
-    <div class="features">
-      <div class="feature">
-        <div class="icon">⚔</div>
-        <h3>Выживание</h3>
-        <p>Классический режим без лишних правил.</p>
-      </div>
-      <div class="feature">
-        <div class="icon">💰</div>
-        <h3>Экономика и магазин</h3>
-        <p>Зарабатывай деньги и покупай то, что нужно.</p>
-      </div>
-      <div class="feature">
-        <div class="icon">🛠</div>
-        <h3>Работы (Jobs)</h3>
-        <p>Выбирай профессию и развивайся в ней.</p>
-      </div>
-      <div class="feature">
-        <div class="icon">🎁</div>
-        <h3>Киты</h3>
-        <p>Стартовый набор для новичков и бонусы.</p>
-      </div>
-      <div class="feature">
-        <div class="icon">🏠</div>
-        <h3>Приваты территорий</h3>
-        <p>Защищай свою базу от посторонних.</p>
-      </div>
-      <div class="feature">
-        <div class="icon">📊</div>
-        <h3>Удобный скорборд</h3>
-        <p>Вся важная информация всегда на виду.</p>
-      </div>
-      <div class="feature">
-        <div class="icon">🛡</div>
-        <h3>Адекватная администрация</h3>
-        <p>Быстрая помощь и честная модерация.</p>
-      </div>
-      <div class="feature">
-        <div class="icon">🔄</div>
-        <h3>Регулярные обновления</h3>
-        <p>Сервер развивается и становится лучше.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Скриншоты -->
-  <section id="screens">
-    <h2 class="section-title">Скриншоты</h2>
-    <div class="screens-grid">
-      <div class="screen-card">
-        <div class="img-wrap">
-          <div class="img-placeholder">Скрин 1<br>Спавн</div>
-        </div>
-        <div class="caption">Спавн-зона сервера</div>
-      </div>
-      <div class="screen-card">
-        <div class="img-wrap">
-          <div class="img-placeholder">Скрин 2<br>База</div>
-        </div>
-        <div class="caption">Игроки строят базу</div>
-      </div>
-      <div class="screen-card">
-        <div class="img-wrap">
-          <div class="img-placeholder">Скрин 3<br>Магазин</div>
-        </div>
-        <div class="caption">Экономика и магазин</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Версии -->
-  <section id="versions">
-    <h2 class="section-title">Версии и режим</h2>
-    <div class="versions">
-      <div class="version">
-        <div class="label">Java Edition</div>
-        <div class="value">1.7.x – 26.3</div>
-      </div>
-      <div class="version">
-        <div class="label">Bedrock Edition</div>
-        <div class="value">26.0 – 26.x</div>
-      </div>
-      <div class="version">
-        <div class="label">Режим</div>
-        <div class="value">Выживание</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Донат, Правила, Модерация -->
-  <section>
-    <h2 class="section-title">Донат · Правила · Модерация</h2>
+  <div class="page-content">
+    <h2 class="page-title">Поддержка сервера</h2>
     <div class="three-col">
-
-      <div class="info-card" id="donate">
-        <h3>Донат</h3>
+      <div class="info-card">
+        <h3>VIP-статус</h3>
         <ul>
-          <li>VIP-статус с бонусными китами</li>
+          <li>Бонусные киты и наборы</li>
           <li>Префикс в чате и цветной ник</li>
           <li>Дополнительные приваты</li>
           <li>Приоритетный вход на сервер</li>
+          <li>Доступ к закрытым событиям</li>
         </ul>
-        <a class="donate-tag" href="https://t.me/LTSPST_servers" target="_blank" rel="noopener">Поддержать сервер</a>
       </div>
-
-      <div class="info-card" id="rules">
-        <h3>Правила</h3>
+      <div class="info-card">
+        <h3>Как оплатить</h3>
         <ul>
-          <li>Без читов и запрещённых модов</li>
-          <li>Уважай других игроков</li>
-          <li>Не гриферь и не ломай чужие постройки</li>
-          <li>Не спамь в чате и не рекламируй</li>
-          <li>Слушай администрацию</li>
+          <li>Напишите в Telegram-бот</li>
+          <li>Выберите нужный товар</li>
+          <li>Оплатите удобным способом</li>
+          <li>Пришлите чек администратору</li>
+          <li>Получите бонусы в игре</li>
         </ul>
       </div>
-
-      <div class="info-card" id="moderation">
-        <h3>Модерация</h3>
+      <div class="info-card">
+        <h3>Важно знать</h3>
         <ul>
-          <li>Онлайн-модераторы и админы</li>
-          <li>Быстрое рассмотрение жалоб</li>
-          <li>Честные и прозрачные баны</li>
-          <li>Помощь новичкам в чате</li>
-          <li>Отчёт о нарушениях в Telegram</li>
+          <li>Донат — добровольная поддержка</li>
+          <li>Возврат средств не предусмотрен</li>
+          <li>Все привилегии выдаются вручную</li>
+          <li>По вопросам — только в Telegram</li>
+          <li>Не передавайте данные карт в игре</li>
         </ul>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section>
-    <div class="cta">
-      <h2>Следи за новостями</h2>
-      <p>Обновления, события и объявления — в нашем Telegram.</p>
-      <div class="hero-actions">
-        <a class="btn btn-tg" href="https://t.me/LTSPST_servers" target="_blank" rel="noopener">Новости сервера</a>
-        <a class="btn btn-ghost" href="https://t.me/LTSPST_servers" target="_blank" rel="noopener">Telegram-канал</a>
       </div>
     </div>
-  </section>
+
+    <!-- Галерея картинок. Положите файлы в donate/img/ и замените имена -->
+    <div class="img-gallery">
+      <img src="img/1.png" alt="Пример привилегии" onerror="this.style.display='none'">
+      <img src="img/2.png" alt="Пример привилегии" onerror="this.style.display='none'">
+      <img src="img/3.png" alt="Пример привилегии" onerror="this.style.display='none'">
+    </div>
+
+    <div class="btn-center">
+      <a class="donate-tag" href="https://t.me/LTSPST_servers" target="_blank" rel="noopener">
+        Написать в Telegram
+      </a>
+    </div>
+  </div>
 
   <footer>Ждём тебя на LTSPST Land</footer>
 </div>
 
-<script>
-  /* ——— Копирование ——— */
-  function copyText(text) {
-    const status = document.getElementById('copy-status');
-    const done = () => {
-      status.textContent = 'Скопировано: ' + text;
-      setTimeout(() => status.textContent = '', 2500);
-    };
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(done).catch(done);
-    } else {
-      done();
-    }
-  }
+<div class="overlay" id="overlay"></div>
 
-  /* ——— Бургер-меню ——— */
+<script>
   const toggle = document.getElementById('menuToggle');
   const menu = document.getElementById('mobileMenu');
+  const overlay = document.getElementById('overlay');
 
   toggle.addEventListener('click', () => {
     toggle.classList.toggle('active');
     menu.classList.toggle('open');
+    overlay.classList.toggle('open');
   });
 
-  // Закрывать меню при клике по ссылке
+  overlay.addEventListener('click', () => {
+    toggle.classList.remove('active');
+    menu.classList.remove('open');
+    overlay.classList.remove('open');
+  });
+
   menu.querySelectorAll('a').forEach(link => {
     link.addEventListener('click', () => {
       toggle.classList.remove('active');
       menu.classList.remove('open');
+      overlay.classList.remove('open');
     });
   });
 
@@ -819,56 +328,26 @@
   (function snow() {
     const canvas = document.getElementById('snow-canvas');
     const ctx = canvas.getContext('2d');
-    let W, H;
-    let flakes = [];
-
-    function resize() {
-      W = canvas.width = window.innerWidth;
-      H = canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resize);
-    resize();
-
-    const COUNT = 90;
-
-    function makeFlake() {
-      return {
-        x: Math.random() * W,
-        y: Math.random() * H,
-        r: Math.random() * 2.5 + 0.8,
-        speedY: Math.random() * 0.7 + 0.3,
-        speedX: Math.random() * 0.4 - 0.2,
-        alpha: Math.random() * 0.5 + 0.3,
-        phase: Math.random() * Math.PI * 2
-      };
-    }
-
-    for (let i = 0; i < COUNT; i++) flakes.push(makeFlake());
-
+    let W, H, flakes = [];
+    function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+    window.addEventListener('resize', resize); resize();
+    for (let i = 0; i < 90; i++) flakes.push({
+      x: Math.random()*W, y: Math.random()*H, r: Math.random()*2.5+0.8,
+      speedY: Math.random()*0.7+0.3, speedX: Math.random()*0.4-0.2,
+      alpha: Math.random()*0.5+0.3, phase: Math.random()*Math.PI*2
+    });
     function draw() {
-      ctx.clearRect(0, 0, W, H);
+      ctx.clearRect(0,0,W,H);
       for (let f of flakes) {
-        ctx.beginPath();
-        ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 255, 255, ${f.alpha})`;
-        ctx.fill();
-
-        f.y += f.speedY;
-        f.x += f.speedX + Math.sin(f.phase) * 0.3;
-        f.phase += 0.008;
-
-        if (f.y > H + 5) {
-          f.y = -5;
-          f.x = Math.random() * W;
-        }
-        if (f.x > W + 5) f.x = -5;
-        if (f.x < -5) f.x = W + 5;
+        ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI*2);
+        ctx.fillStyle = `rgba(255,255,255,${f.alpha})`; ctx.fill();
+        f.y += f.speedY; f.x += f.speedX + Math.sin(f.phase)*0.3; f.phase += 0.008;
+        if (f.y > H+5) { f.y = -5; f.x = Math.random()*W; }
+        if (f.x > W+5) f.x = -5; if (f.x < -5) f.x = W+5;
       }
       requestAnimationFrame(draw);
-    }
-    draw();
+    } draw();
   })();
 </script>
-
 </body>
 </html>
