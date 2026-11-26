@@ -52,27 +52,15 @@
 
   /* Контент */
   .page-content { padding: 40px 0 80px; text-align: center; }
-  .page-title { font-size: clamp(16px, 3vw, 22px); margin-bottom: 20px; text-shadow: 0 0 20px rgba(34, 211, 238, 0.2); }
+  .page-title { font-size: clamp(16px, 3vw, 22px); margin-bottom: 30px; text-shadow: 0 0 20px rgba(34, 211, 238, 0.2); }
   
-  /* Блоки с картинками */
-  .moder-image {
-    display: flex; justify-content: center; margin-bottom: 40px;
-  }
-  .moder-image img {
-    max-width: 100%; width: 320px; height: auto;
-    filter: drop-shadow(0 10px 25px rgba(0,0,0,0.6));
-    transition: transform 0.3s ease;
-  }
-  .moder-image img:hover { transform: scale(1.05) translateY(-5px); }
-  .moder-image.small img { width: 240px; } 
-
   /* Карточки */
   .info-card { 
     background: var(--card); border: 1px solid var(--border); border-radius: 16px; 
-    padding: 30px 24px; text-align: left; margin-bottom: 20px;
+    padding: 24px; text-align: left; margin-bottom: 30px;
     transition: transform 0.2s, border-color 0.2s;
   }
-  .info-card:hover { transform: translateY(-4px); border-color: rgba(124, 92, 255, 0.4); }
+  .info-card:hover { border-color: rgba(124, 92, 255, 0.4); }
   .info-card h3 { font-size: 14px; margin-bottom: 16px; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
   .info-card p { font-size: 10px; color: var(--muted); margin-bottom: 20px; }
 
@@ -90,15 +78,62 @@
   }
   .download-btn svg { width: 18px; height: 18px; fill: currentColor; }
 
-  /* Блок требований (Анкета) */
-  .req-list { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
+  /* --- ОБЪЕДИНЕННЫЙ БЛОК: КАРТИНКА СВЕРХУ, ТЕКСТ СНИЗУ --- */
+  .moder-join-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 40px;
+  }
+
+  /* Картинка отдельно */
+  .moder-image-standalone {
+    display: flex;
+    justify-content: center;
+    z-index: 2; /* Чтобы картинка была поверх карточки */
+    margin-bottom: -15px; /* Отрицательный отступ, чтобы картинка "наехала" на карточку */
+  }
+  
+  .moder-image-standalone img {
+    width: 220px; 
+    height: auto;
+    filter: drop-shadow(0 15px 25px rgba(0,0,0,0.8)); /* Тень, чтобы оторвать от фона */
+    transition: transform 0.3s ease;
+  }
+  .moder-image-standalone img:hover {
+    transform: scale(1.05) translateY(-5px);
+  }
+
+  /* Сама карточка с текстом */
+  .moder-join-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 35px 24px 24px 24px; /* Большой отступ сверху, чтобы текст не налезал на картинку */
+    text-align: left;
+    width: 100%;
+    z-index: 1; /* Карточка под картинкой */
+  }
+
+  .moder-join-card h3 {
+    font-size: 14px; margin-bottom: 12px; 
+    background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent;
+    text-align: center; /* Заголовок по центру */
+  }
+
+  .moder-join-card p {
+    font-size: 10px; color: var(--muted); margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .req-list { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-top: 20px; margin-bottom: 24px; }
   .req-list li { font-size: 9px; color: var(--muted); line-height: 1.9; padding-left: 16px; position: relative; }
   .req-list li::before { content: '>'; position: absolute; left: 0; color: var(--accent-2); }
   .req-star { color: #ff4444; margin-left: 4px; font-weight: bold; }
   
-  .btn-center { margin-top: 40px; }
+  /* Кнопка отправки */
   .donate-tag { 
-    display: inline-block; padding: 14px 24px; border-radius: 8px; 
+    display: inline-block; padding: 14px 24px; border-radius: 8px; width: 100%; text-align: center;
     background: var(--grad); color: #fff; font-size: 10px; text-decoration: none; 
     transition: transform 0.15s, box-shadow 0.2s; 
   }
@@ -109,8 +144,8 @@
   @media (max-width: 720px) { 
     .nav-links { display: none; } 
     .menu-toggle { display: flex; } 
-    .moder-image img { width: 260px; } 
-    .moder-image.small img { width: 200px; }
+    .moder-image-standalone img { width: 180px; }
+    .moder-image-standalone { margin-bottom: -10px; }
   }
 </style>
 </head>
@@ -137,24 +172,17 @@
   </nav>
 
   <div class="page-content">
-    <h2 class="page-title">Набор в команду</h2>
     
-    <!-- ПЕРВАЯ КАРТИНКА (Полный рост) -->
-    <div class="moder-image">
-      <img src="moder1.png" alt="Модератор">
-    </div>
-
+    <!-- БЛОК 1: Документы -->
     <div class="info-card">
       <h3>Документы для ознакомления</h3>
       <p>Перед подачей заявки обязательно изучите правила сервера и требования к анкете. Вы можете скачать файлы ниже.</p>
       
       <div style="display: flex; gap: 14px; flex-wrap: wrap;">
-        <!-- Скачивание правил -->
         <a href="1.rules.doc" class="download-btn" download>
           <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
           Скачать правила (.doc)
         </a>
-        <!-- Скачивание анкеты -->
         <a href="2.moders.doc" class="download-btn" download>
           <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
           Скачать анкету (.doc)
@@ -162,27 +190,31 @@
       </div>
     </div>
 
-    <!-- ВТОРАЯ КАРТИНКА (По пояс) -->
-    <div class="moder-image small" style="margin-top: 40px;">
-      <img src="moder2.png" alt="Требования к модератору">
-    </div>
-
-    <div class="info-card">
-      <h3>Как стать модератором</h3>
-      <p>Если вы прочитали правила и готовы подать заявку, заполните анкету и отправьте её на нашу почту.</p>
+    <!-- БЛОК 2: КАРТИНКА СВЕРХУ, ТЕКСТ В ПЛОТНУЮ СНИЗУ -->
+    <div class="moder-join-wrapper">
       
-      <ul class="req-list">
-        <li>Заполните все обязательные поля в анкете <span class="req-star">*</span></li>
-        <li>Возраст от 14 лет <span class="req-star">*</span></li>
-        <li>Отправьте заполненный файл на почту: <strong>d220dx@gmail.com</strong></li>
-        <li>Все файлы хранятся строго у создателя сервера</li>
-      </ul>
+      <!-- Картинка стоит отдельно, но "наезжает" на карточку -->
+      <div class="moder-image-standalone">
+        <img src="moder2.png" alt="Требования к модератору">
+      </div>
 
-      <div class="btn-center" style="text-align: left; margin-top: 24px;">
+      <!-- Карточка с текстом -->
+      <div class="moder-join-card">
+        <h3>Как стать модератором</h3>
+        <p>Если вы прочитали правила и готовы подать заявку, заполните анкету и отправьте её на нашу почту.</p>
+        
+        <ul class="req-list">
+          <li>Заполните все обязательные поля в анкете <span class="req-star">*</span></li>
+          <li>Возраст от 14 лет <span class="req-star">*</span></li>
+          <li>Отправьте заполненный файл на почту: <strong>d220dx@gmail.com</strong></li>
+          <li>Все файлы хранятся строго у создателя сервера</li>
+        </ul>
+
         <a class="donate-tag" href="mailto:d220dx@gmail.com?subject=Заявка на модератора LTSPST&body=Привет! Прикрепляю свою анкету на должность модератора.">
           Отправить заявку на почту
         </a>
       </div>
+
     </div>
 
   </div>
@@ -238,4 +270,4 @@
   })();
 </script>
 </body>
-  </html>
+</html>
