@@ -14,18 +14,104 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: radial-gradient(ellipse at 50% 0%, rgba(255, 59, 59, 0.12), transparent 55%), var(--bg);
       color: var(--text); line-height: 1.6; min-height: 100vh;
+      position: relative; overflow-x: hidden;
     }
+
+    /* ================= СНЕГ ================= */
+    .snow {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .snowflake {
+      position: absolute;
+      top: -10px;
+      color: #fff;
+      opacity: 0.85;
+      animation-name: fall, drift;
+      animation-timing-function: linear, ease-in-out;
+      animation-iteration-count: infinite, infinite;
+      animation-direction: normal, alternate;
+      text-shadow: 0 0 6px rgba(255, 200, 200, 0.8);
+    }
+    @keyframes fall {
+      from { transform: translateY(-10px); }
+      to   { transform: translateY(105vh); }
+    }
+    @keyframes drift {
+      from { margin-left: -30px; }
+      to   { margin-left: 30px; }
+    }
+
+    /* Контент поверх снега */
+    .header, .container { position: relative; z-index: 1; }
+
     .header {
       background: rgba(18, 6, 8, 0.85); backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border); padding: 16px 24px;
       display: flex; align-items: center; justify-content: space-between;
       position: sticky; top: 0; z-index: 100;
     }
-    .header a { color: var(--muted); text-decoration: none; font-weight: 600; transition: color 0.2s; }
-    .header a:hover { color: var(--text); }
-    .logo { font-weight: 900; font-size: 1.2rem; color: var(--text) !important; display: flex; align-items: center; gap: 10px;}
+
+    /* Логотип — без стрелки */
+    .logo {
+      font-weight: 900; font-size: 1.2rem; color: var(--text);
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none;
+    }
     .logo img { width: 32px; height: 32px; border-radius: 8px; }
-    
+
+    /* Три точки — такая же кнопка, как на главной */
+    .mobile-toggle {
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.6rem;
+      cursor: pointer;
+      padding: 4px 10px;
+      line-height: 1;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+    .mobile-toggle:hover {
+      background: rgba(255, 59, 59, 0.12);
+    }
+
+    /* Выпадающее меню */
+    .mobile-menu {
+      display: none;
+      flex-direction: column;
+      background: var(--card);
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 16px;
+      min-width: 180px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+      overflow: hidden;
+      animation: menuIn 0.18s ease;
+      z-index: 101;
+    }
+    @keyframes menuIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .mobile-menu.active { display: flex; }
+    .mobile-menu a {
+      padding: 14px 18px;
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.2s, color 0.2s;
+    }
+    .mobile-menu a:last-child { border-bottom: none; }
+    .mobile-menu a:hover { background: var(--card-hover, #2a1114); color: #ff8a8a; }
+
     .container { max-width: 720px; margin: 0 auto; padding: 40px 18px; }
     h1 { font-size: 2rem; font-weight: 900; margin-bottom: 10px; color: var(--accent1); }
     .subtitle { color: var(--muted); margin-bottom: 24px; }
@@ -58,7 +144,7 @@
     .news-card:hover { border-color: rgba(255, 59, 59, 0.4); }
     .date { font-size: 0.85rem; color: var(--muted); margin-bottom: 8px; font-weight: 600; }
     .news-card h2 { font-size: 1.3rem; margin-bottom: 10px; color: var(--text); }
-    
+
     .news-content { color: var(--muted); font-size: 0.95rem; margin-bottom: 16px; line-height: 1.7; }
     .news-content p { margin-bottom: 10px; }
     .news-content strong { color: var(--text); font-weight: bold; }
@@ -103,9 +189,24 @@
   </style>
 </head>
 <body>
+
+  <!-- Снег -->
+  <div class="snow" id="snow" aria-hidden="true"></div>
+
   <header class="header">
-    <a href="../" class="logo"><img src="../logo.png" onerror="this.style.display='none'"> ← LTSPST</a>
-    <a href="../">На главную</a>
+    <a href="../" class="logo">
+      <img src="../logo.png" alt="Логотип LTSPST" onerror="this.style.display='none'">
+      LTSPST
+    </a>
+
+    <!-- Три точки -->
+    <button class="mobile-toggle" aria-label="Открыть меню" id="burgerBtn">⋮</button>
+
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="../">Главная</a>
+      <a href="https://ltspst.github.io/projects">Проекты</a>
+      <a href="../#server">Сервер</a>
+    </div>
   </header>
 
   <div class="container">
@@ -133,7 +234,7 @@
     <!-- ФОРМА ДОБАВЛЕНИЯ НОВОСТИ -->
     <div id="addNewsForm" class="add-news-form">
       <h3 style="margin-bottom: 15px;">Новая запись</h3>
-      
+
       <div class="hint">
         Поддерживается Markdown:<br>
         <code>**жирный**</code>, <code>*курсив*</code>, <code>__подчеркнутый__</code><br>
@@ -155,6 +256,58 @@
     </div>
   </div>
 
+  <!-- МЕНЮ ТРИ ТОЧКИ -->
+  <script>
+    const burgerBtn = document.getElementById('burgerBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    burgerBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('active');
+      burgerBtn.textContent = mobileMenu.classList.contains('active') ? '✕' : '⋮';
+    });
+
+    document.querySelectorAll('#mobileMenu a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.remove('active');
+        burgerBtn.textContent = '⋮';
+      });
+    });
+
+    // Закрытие меню по клику вне его
+    document.addEventListener('click', (e) => {
+      if (!mobileMenu.contains(e.target) && e.target !== burgerBtn) {
+        mobileMenu.classList.remove('active');
+        burgerBtn.textContent = '⋮';
+      }
+    });
+
+    // ===== ГЕНЕРАЦИЯ СНЕГА =====
+    (function createSnow() {
+      const snowContainer = document.getElementById('snow');
+      const flakeCount = 60;
+
+      for (let i = 0; i < flakeCount; i++) {
+        const flake = document.createElement('span');
+        flake.className = 'snowflake';
+        flake.textContent = Math.random() > 0.5 ? '❄' : '•';
+
+        const size = Math.random() * 10 + 6;
+        const left = Math.random() * 100;
+        const fallDuration = Math.random() * 8 + 6;
+        const driftDuration = Math.random() * 3 + 2;
+        const delay = Math.random() * -20;
+
+        flake.style.left = left + 'vw';
+        flake.style.fontSize = size + 'px';
+        flake.style.opacity = (Math.random() * 0.5 + 0.4).toFixed(2);
+        flake.style.animationDuration = fallDuration + 's, ' + driftDuration + 's';
+        flake.style.animationDelay = delay + 's, ' + delay + 's';
+
+        snowContainer.appendChild(flake);
+      }
+    })();
+  </script>
+
   <!-- ПОДКЛЮЧАЕМ FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -174,14 +327,12 @@
     const db = getFirestore(app);
     const newsCollection = collection(db, "news");
 
-    // НАСТРОЙКИ ДОСТУПА (МЕНЯЙ ЗДЕСЬ)
     const ADMIN_LOGIN = "Stepan20098728";
-    const ADMIN_PASSWORD = "gardosha2009"; 
-    
+    const ADMIN_PASSWORD = "gardosha2009";
     const FRIEND_LOGIN = "FRIENDS";
     const FRIEND_PASSWORD = "garda0927";
 
-    let currentRole = localStorage.getItem('ltspst_role') || null; // 'admin' или 'friend'
+    let currentRole = localStorage.getItem('ltspst_role') || null;
 
     function parseMarkdown(text) {
       if (!text) return '';
@@ -249,7 +400,7 @@
 
     window.addNews = async () => {
       if (!currentRole) return alert('Войдите, чтобы добавлять новости!');
-      
+
       const title = document.getElementById('newsTitle').value.trim();
       const text = document.getElementById('newsText').value.trim();
       if (!title || !text) return alert('Заполни заголовок и текст!');
@@ -263,7 +414,7 @@
           createdAt: Date.now(),
           comments: []
         });
-        
+
         document.getElementById('newsTitle').value = '';
         document.getElementById('newsText').value = '';
         toggleAddForm();
@@ -276,7 +427,7 @@
     window.deleteNews = async (id) => {
       if (currentRole !== 'admin') return alert('Только Админ может удалять новости!');
       if (!confirm('Точно удалить эту новость?')) return;
-      
+
       try {
         await deleteDoc(doc(db, "news", id));
       } catch (e) {
@@ -288,10 +439,10 @@
     window.addComment = async (newsId) => {
       const nameInput = document.getElementById(`name_${newsId}`);
       const textInput = document.getElementById(`text_${newsId}`);
-      
+
       const name = nameInput.value.trim() || 'Гость';
       const text = textInput.value.trim();
-      
+
       if (!text) return alert('Напиши комментарий!');
 
       try {
@@ -335,8 +486,8 @@
         }
 
         const parsedText = parseMarkdown(news.text);
-        const deleteBtnHTML = currentRole === 'admin' 
-          ? `<button class="delete-btn" onclick="deleteNews('${news.id}')" title="Удалить новость">🗑</button>` 
+        const deleteBtnHTML = currentRole === 'admin'
+          ? `<button class="delete-btn" onclick="deleteNews('${news.id}')" title="Удалить новость">🗑</button>`
           : '';
         const authorBadge = news.author ? `<span style="font-size: 0.75rem; background: rgba(255,59,59,0.1); padding: 2px 6px; border-radius: 4px; margin-left: 8px;">${news.author}</span>` : '';
 
@@ -347,11 +498,11 @@
           <div class="date">${news.date} ${authorBadge}</div>
           <h2>${news.title}</h2>
           <div class="news-content">${parsedText}</div>
-          
+
           <div class="comments-section">
             <h4 style="font-size: 0.9rem; margin-bottom: 10px; color: var(--muted);">Комментарии (${news.comments ? news.comments.length : 0}):</h4>
             <div>${commentsHTML}</div>
-            
+
             <div class="comment-form">
               <input type="text" id="name_${news.id}" class="comment-input name-input" placeholder="Твоё имя...">
               <input type="text" id="text_${news.id}" class="comment-input text-input" placeholder="Комментарий...">
