@@ -12,16 +12,50 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: radial-gradient(ellipse at 50% 0%, rgba(255, 59, 59, 0.12), transparent 55%), var(--bg);
+      background: radial-gradient(ellipse at 50% 0%, rgba(255, 59, 59, 0.18), transparent 60%), var(--bg);
       color: var(--text); line-height: 1.6; min-height: 100vh;
       position: relative; overflow-x: hidden;
+    }
+
+    /* ================= ФОН С НОВОСТНЫМИ ИКОНКАМИ ================= */
+    .bg-icons {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .bg-icon {
+      position: absolute;
+      color: rgba(255, 140, 140, 0.22);
+      animation: floatIcon 20s ease-in-out infinite alternate;
+      user-select: none;
+      line-height: 1;
+    }
+    @keyframes floatIcon {
+      from { transform: translateY(0) rotate(-6deg) scale(1); }
+      to   { transform: translateY(-30px) rotate(6deg) scale(1.08); }
+    }
+    /* Иконки чуть светлее на красном фоне */
+    .bg-icon.light { color: rgba(255, 190, 190, 0.28); }
+    .bg-icon.warm  { color: rgba(255, 150, 120, 0.24); }
+
+    /* Мягкое затемнение для читаемости */
+    .bg-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(255, 59, 59, 0.10), transparent 55%),
+        linear-gradient(180deg, rgba(18, 6, 8, 0.35) 0%, rgba(18, 6, 8, 0.75) 60%, var(--bg) 100%);
     }
 
     /* ================= СНЕГ ================= */
     .snow {
       position: fixed;
       inset: 0;
-      z-index: 0;
+      z-index: 1;
       pointer-events: none;
       overflow: hidden;
     }
@@ -45,8 +79,8 @@
       to   { margin-left: 30px; }
     }
 
-    /* Контент поверх снега */
-    .header, .container { position: relative; z-index: 1; }
+    /* Контент поверх фона и снега */
+    .header, .container { position: relative; z-index: 2; }
 
     .header {
       background: rgba(18, 6, 8, 0.85); backdrop-filter: blur(12px);
@@ -55,7 +89,6 @@
       position: sticky; top: 0; z-index: 100;
     }
 
-    /* Логотип — без стрелки */
     .logo {
       font-weight: 900; font-size: 1.2rem; color: var(--text);
       display: flex; align-items: center; gap: 10px;
@@ -63,7 +96,6 @@
     }
     .logo img { width: 32px; height: 32px; border-radius: 8px; }
 
-    /* Три точки — такая же кнопка, как на главной */
     .mobile-toggle {
       background: none;
       border: none;
@@ -75,11 +107,8 @@
       border-radius: 8px;
       transition: background 0.2s;
     }
-    .mobile-toggle:hover {
-      background: rgba(255, 59, 59, 0.12);
-    }
+    .mobile-toggle:hover { background: rgba(255, 59, 59, 0.12); }
 
-    /* Выпадающее меню */
     .mobile-menu {
       display: none;
       flex-direction: column;
@@ -190,6 +219,10 @@
 </head>
 <body>
 
+  <!-- Фон: новостные иконки на красном -->
+  <div class="bg-icons" id="bgIcons" aria-hidden="true"></div>
+  <div class="bg-overlay" aria-hidden="true"></div>
+
   <!-- Снег -->
   <div class="snow" id="snow" aria-hidden="true"></div>
 
@@ -199,7 +232,6 @@
       LTSPST
     </a>
 
-    <!-- Три точки -->
     <button class="mobile-toggle" aria-label="Открыть меню" id="burgerBtn">⋮</button>
 
     <div class="mobile-menu" id="mobileMenu">
@@ -218,7 +250,6 @@
       <button id="toggleAddBtn" class="btn" style="display: none;" onclick="toggleAddForm()">+ Добавить новость</button>
     </div>
 
-    <!-- БЛОК АВТОРИЗАЦИИ -->
     <div id="authBox" class="auth-box">
       <div id="loginForm" style="display: flex; gap: 10px; flex-wrap: wrap; width: 100%;">
         <input type="text" id="loginInput" class="auth-input" placeholder="Логин (admin или friend)" style="flex: 1; min-width: 120px;">
@@ -231,17 +262,14 @@
       </div>
     </div>
 
-    <!-- ФОРМА ДОБАВЛЕНИЯ НОВОСТИ -->
     <div id="addNewsForm" class="add-news-form">
       <h3 style="margin-bottom: 15px;">Новая запись</h3>
-
       <div class="hint">
         Поддерживается Markdown:<br>
         <code>**жирный**</code>, <code>*курсив*</code>, <code>__подчеркнутый__</code><br>
         <code>![Описание](ссылка_на_картинку)</code> — для фото<br>
         <code>- пункт списка</code> — для списков
       </div>
-
       <input type="text" id="newsTitle" placeholder="Заголовок новости...">
       <textarea id="newsText" placeholder="Текст новости..."></textarea>
       <div style="display: flex; gap: 10px;">
@@ -250,14 +278,13 @@
       </div>
     </div>
 
-    <!-- СПИСОК НОВОСТЕЙ -->
     <div id="newsList">
       <div class="loading-text">Загрузка новостей...</div>
     </div>
   </div>
 
-  <!-- МЕНЮ ТРИ ТОЧКИ -->
   <script>
+    // ===== МЕНЮ ТРИ ТОЧКИ =====
     const burgerBtn = document.getElementById('burgerBtn');
     const mobileMenu = document.getElementById('mobileMenu');
 
@@ -273,7 +300,6 @@
       });
     });
 
-    // Закрытие меню по клику вне его
     document.addEventListener('click', (e) => {
       if (!mobileMenu.contains(e.target) && e.target !== burgerBtn) {
         mobileMenu.classList.remove('active');
@@ -281,7 +307,37 @@
       }
     });
 
-    // ===== ГЕНЕРАЦИЯ СНЕГА =====
+    // ===== ФОН: НОВОСТНЫЕ ИКОНКИ =====
+    (function createBgIcons() {
+      const container = document.getElementById('bgIcons');
+      // Светлые «новостные» иконки
+      const icons = ['📰', '📷', '🎙️', '🌐', '🔔', '📡', '🗞️', '📺', '📻', '💬', '🔍', '📢'];
+      const count = 26;
+
+      for (let i = 0; i < count; i++) {
+        const icon = document.createElement('span');
+        icon.className = 'bg-icon ' + (Math.random() > 0.5 ? 'light' : 'warm');
+        icon.textContent = icons[Math.floor(Math.random() * icons.length)];
+
+        const size = Math.random() * 70 + 28;          // 28–98px
+        const top = Math.random() * 100;                // %
+        const left = Math.random() * 100;               // %
+        const dur = Math.random() * 12 + 12;            // 12–24s
+        const delay = Math.random() * -20;
+
+        icon.style.fontSize = size + 'px';
+        icon.style.top = top + 'vh';
+        icon.style.left = left + 'vw';
+        icon.style.animationDuration = dur + 's';
+        icon.style.animationDelay = delay + 's';
+        // Индивидуальный сдвиг фазы, чтобы не двигались синхронно
+        icon.style.animationDirection = Math.random() > 0.5 ? 'alternate' : 'alternate-reverse';
+
+        container.appendChild(icon);
+      }
+    })();
+
+    // ===== СНЕГ =====
     (function createSnow() {
       const snowContainer = document.getElementById('snow');
       const flakeCount = 60;
@@ -308,7 +364,7 @@
     })();
   </script>
 
-  <!-- ПОДКЛЮЧАЕМ FIREBASE -->
+  <!-- FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, collection, addDoc, onSnapshot, query, updateDoc, doc, arrayUnion, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
