@@ -6,7 +6,7 @@
 <title>LTSPST Land — сервер Minecraft</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #0b0d12;
@@ -18,6 +18,7 @@
     --accent: #7c5cff;
     --accent-2: #22d3ee;
     --grad: linear-gradient(135deg, #7c5cff 0%, #22d3ee 100%);
+    --pixel-font: 'Press Start 2P', 'Courier New', monospace;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -25,11 +26,25 @@
   html { scroll-behavior: smooth; }
 
   body {
-    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Press Start 2P', 'Courier New', monospace;
     background: var(--bg);
     color: var(--text);
-    line-height: 1.6;
+    line-height: 1.8;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ——— Сетка на фоне ——— */
+  .bg-grid {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background-image:
+      linear-gradient(rgba(124, 92, 255, 0.10) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124, 92, 255, 0.10) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
   }
 
   .bg-glow {
@@ -42,43 +57,116 @@
     z-index: 0;
   }
 
+  /* ——— Снег ——— */
+  #snow-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+
   .container {
     position: relative;
-    z-index: 1;
+    z-index: 2;
     max-width: 1080px;
     margin: 0 auto;
     padding: 0 24px;
   }
 
+  /* ——— Навигация ——— */
   nav {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 22px 0;
+    position: relative;
   }
 
   .brand {
-    font-weight: 800;
-    font-size: 20px;
-    letter-spacing: 0.5px;
+    font-family: var(--pixel-font);
+    font-weight: 400;
+    font-size: 16px;
+    letter-spacing: 1px;
     background: var(--grad);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+    text-shadow: 0 0 18px rgba(124, 92, 255, 0.35);
   }
 
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
   .nav-links a {
     color: var(--muted);
     text-decoration: none;
-    margin-left: 24px;
-    font-size: 15px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
     transition: color 0.2s;
+    letter-spacing: 0.5px;
   }
   .nav-links a:hover { color: var(--text); }
 
+  /* ——— Три точки (бургер) ——— */
+  .menu-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 40px;
+    height: 40px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    padding: 0 9px;
+    transition: border-color 0.2s;
+    z-index: 20;
+  }
+  .menu-toggle:hover { border-color: rgba(124, 92, 255, 0.5); }
+  .menu-toggle span {
+    display: block;
+    height: 2px;
+    width: 100%;
+    background: var(--text);
+    border-radius: 2px;
+    transition: transform 0.25s, opacity 0.25s;
+  }
+  .menu-toggle.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .menu-toggle.active span:nth-child(2) { opacity: 0; }
+  .menu-toggle.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  .mobile-menu {
+    display: none;
+    position: absolute;
+    top: 72px;
+    right: 0;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 22px;
+    flex-direction: column;
+    gap: 16px;
+    z-index: 15;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    min-width: 220px;
+  }
+  .mobile-menu.open { display: flex; }
+  .mobile-menu a {
+    color: var(--muted);
+    text-decoration: none;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    transition: color 0.2s;
+  }
+  .mobile-menu a:hover { color: var(--text); }
+
+  /* ——— Hero ——— */
   .hero {
     text-align: center;
-    padding: 90px 0 70px;
+    padding: 70px 0 70px;
   }
 
   .badge {
@@ -88,15 +176,18 @@
     border-radius: 999px;
     background: var(--bg-soft);
     color: var(--muted);
-    font-size: 13px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
     margin-bottom: 26px;
   }
 
   h1 {
-    font-size: clamp(40px, 7vw, 68px);
-    font-weight: 800;
-    letter-spacing: -1.5px;
-    line-height: 1.05;
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(22px, 5vw, 42px);
+    font-weight: 400;
+    letter-spacing: 1px;
+    line-height: 1.6;
+    text-shadow: 0 0 24px rgba(124, 92, 255, 0.25);
   }
 
   .hero h1 span {
@@ -108,9 +199,11 @@
 
   .hero p.lead {
     margin: 22px auto 0;
-    max-width: 580px;
+    max-width: 640px;
     color: var(--muted);
-    font-size: 18px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    line-height: 2;
   }
 
   .hero-actions {
@@ -127,13 +220,15 @@
     gap: 8px;
     padding: 14px 24px;
     border-radius: 12px;
-    font-weight: 600;
-    font-size: 15px;
+    font-weight: 400;
+    font-size: 10px;
     text-decoration: none;
     border: 1px solid transparent;
     cursor: pointer;
-    font-family: inherit;
+    font-family: 'Press Start 2P', monospace;
     transition: transform 0.15s, background 0.2s, border-color 0.2s;
+    letter-spacing: 0.5px;
+    line-height: 1.4;
   }
   .btn:hover { transform: translateY(-2px); }
 
@@ -150,8 +245,15 @@
   }
   .btn-ghost:hover { border-color: rgba(255,255,255,0.2); }
 
+  .btn-tg {
+    background: #229ed9;
+    color: #fff;
+  }
+  .btn-tg:hover { background: #2aaee9; }
+
+  /* ——— IP-карточка ——— */
   .ip-card {
-    max-width: 620px;
+    max-width: 640px;
     margin: 60px auto 0;
     background: var(--card);
     border: 1px solid var(--border);
@@ -173,15 +275,18 @@
   .ip-row:first-child { margin-top: 0; }
 
   .ip-label {
-    font-size: 13px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
     color: var(--muted);
+    margin-bottom: 6px;
   }
 
   .ip-value {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    font-size: 15px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
     color: var(--accent-2);
     word-break: break-all;
+    line-height: 1.6;
   }
 
   .copy-btn {
@@ -190,32 +295,38 @@
     color: var(--text);
     padding: 8px 14px;
     border-radius: 8px;
-    font-size: 13px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
     cursor: pointer;
-    font-family: inherit;
     white-space: nowrap;
     transition: background 0.2s;
+    line-height: 1.4;
   }
   .copy-btn:hover { background: rgba(255,255,255,0.06); }
 
   .copy-status {
     text-align: center;
-    font-size: 13px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
     color: var(--accent-2);
     min-height: 18px;
-    margin-top: 12px;
+    margin-top: 14px;
   }
 
+  /* ——— Секции ——— */
   section { padding: 60px 0; }
 
   .section-title {
     text-align: center;
-    font-size: 32px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(16px, 3vw, 22px);
+    font-weight: 400;
+    letter-spacing: 0.5px;
     margin-bottom: 40px;
+    text-shadow: 0 0 20px rgba(34, 211, 238, 0.2);
   }
 
+  /* ——— Фичи ——— */
   .features {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
@@ -246,19 +357,24 @@
   }
 
   .feature h3 {
-    font-size: 17px;
-    font-weight: 600;
-    margin-bottom: 6px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    font-weight: 400;
+    margin-bottom: 10px;
+    line-height: 1.5;
   }
 
   .feature p {
-    font-size: 14px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
     color: var(--muted);
+    line-height: 1.9;
   }
 
+  /* ——— Версии ——— */
   .versions {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 18px;
   }
 
@@ -271,18 +387,149 @@
   }
 
   .version .label {
-    font-size: 13px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
     color: var(--muted);
     text-transform: uppercase;
     letter-spacing: 1px;
   }
 
   .version .value {
-    font-size: 22px;
-    font-weight: 700;
-    margin-top: 8px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 12px;
+    font-weight: 400;
+    margin-top: 12px;
+    line-height: 1.5;
   }
 
+  /* ——— Скриншоты ——— */
+  .screens-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+  }
+
+  .screen-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .screen-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(34, 211, 238, 0.4);
+  }
+
+  .screen-card .img-wrap {
+    position: relative;
+    padding-top: 62%;
+    background: var(--bg-soft);
+  }
+  .screen-card .img-wrap img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    image-rendering: pixelated;
+  }
+  .screen-card .img-placeholder {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: var(--muted);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    text-align: center;
+    padding: 12px;
+    background: repeating-linear-gradient(
+      45deg,
+      rgba(124,92,255,0.06) 0 10px,
+      transparent 10px 20px
+    );
+  }
+  .screen-card .caption {
+    padding: 14px 18px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    line-height: 1.8;
+  }
+
+  /* ——— Донат / Правила / Модерация ——— */
+  .three-col {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+  }
+
+  .info-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 26px 24px;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .info-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(124, 92, 255, 0.4);
+  }
+
+  .info-card h3 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 12px;
+    margin-bottom: 18px;
+    line-height: 1.6;
+    background: var(--grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .info-card ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .info-card li {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    color: var(--muted);
+    line-height: 1.9;
+    padding-left: 16px;
+    position: relative;
+  }
+  .info-card li::before {
+    content: '>';
+    position: absolute;
+    left: 0;
+    color: var(--accent-2);
+    font-size: 8px;
+  }
+
+  .donate-tag {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    background: var(--grad);
+    color: #fff;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    text-decoration: none;
+    transition: transform 0.15s, box-shadow 0.2s;
+    line-height: 1.5;
+  }
+  .donate-tag:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(124, 92, 255, 0.4);
+  }
+
+  /* ——— CTA ——— */
   .cta {
     text-align: center;
     background: var(--card);
@@ -292,45 +539,78 @@
   }
 
   .cta h2 {
-    font-size: 28px;
-    margin-bottom: 10px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 16px;
+    margin-bottom: 16px;
+    line-height: 1.7;
   }
 
   .cta p {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
     color: var(--muted);
     margin-bottom: 28px;
+    line-height: 1.9;
   }
-
-  .btn-tg {
-    background: #229ed9;
-    color: #fff;
-  }
-  .btn-tg:hover { background: #2aaee9; }
 
   footer {
     text-align: center;
     color: var(--muted);
-    font-size: 14px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
     padding: 40px 0 50px;
+    line-height: 1.9;
   }
 
+  /* ——— Адаптив ——— */
   @media (max-width: 720px) {
     .nav-links { display: none; }
-    .hero { padding: 60px 0 50px; }
+    .menu-toggle { display: flex; }
+    .hero { padding: 50px 0 50px; }
     .ip-row { flex-direction: column; align-items: stretch; text-align: center; }
+    .ip-row .ip-value { font-size: 8px; }
+    h1 { font-size: clamp(18px, 6vw, 26px); }
+    .section-title { font-size: clamp(13px, 4vw, 18px); }
+    .feature h3 { font-size: 10px; }
+    .feature p { font-size: 8px; }
   }
 </style>
 </head>
 <body>
+
+<!-- Сетка -->
+<div class="bg-grid"></div>
 <div class="bg-glow"></div>
+<!-- Снег -->
+<canvas id="snow-canvas"></canvas>
 
 <div class="container">
   <nav>
     <div class="brand">LTSPST</div>
+
+    <!-- ПК-навигация (без точек) -->
     <div class="nav-links">
       <a href="#features">Возможности</a>
+      <a href="#screens">Скрины</a>
       <a href="#versions">Версии</a>
-      <a href="#connect">Подключение</a>
+      <a href="#donate">Донат</a>
+      <a href="#rules">Правила</a>
+      <a href="#moderation">Модерация</a>
+    </div>
+
+    <!-- Три точки для телефонов -->
+    <button class="menu-toggle" id="menuToggle" aria-label="Меню">
+      <span></span><span></span><span></span>
+    </button>
+
+    <!-- Мобильное меню -->
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="#features">Возможности</a>
+      <a href="#screens">Скрины</a>
+      <a href="#versions">Версии</a>
+      <a href="#donate">Донат</a>
+      <a href="#rules">Правила</a>
+      <a href="#moderation">Модерация</a>
     </div>
   </nav>
 
@@ -347,7 +627,7 @@
       <div class="ip-row">
         <div>
           <div class="ip-label">Java Edition</div>
-          <div class="ip-value">LTSPST_YT.aternos.me:27924</div>
+          <div class="ip-value">LTSPST_YT.aternos.me:57480</div>
         </div>
         <button class="copy-btn" onclick="copyText('LTSPST_YT.aternos.me:57480')">Копировать</button>
       </div>
@@ -362,6 +642,7 @@
     </div>
   </header>
 
+  <!-- Возможности -->
   <section id="features">
     <h2 class="section-title">Что есть на сервере</h2>
     <div class="features">
@@ -408,6 +689,32 @@
     </div>
   </section>
 
+  <!-- Скриншоты -->
+  <section id="screens">
+    <h2 class="section-title">Скриншоты</h2>
+    <div class="screens-grid">
+      <div class="screen-card">
+        <div class="img-wrap">
+          <div class="img-placeholder">Скрин 1<br>Спавн</div>
+        </div>
+        <div class="caption">Спавн-зона сервера</div>
+      </div>
+      <div class="screen-card">
+        <div class="img-wrap">
+          <div class="img-placeholder">Скрин 2<br>База</div>
+        </div>
+        <div class="caption">Игроки строят базу</div>
+      </div>
+      <div class="screen-card">
+        <div class="img-wrap">
+          <div class="img-placeholder">Скрин 3<br>Магазин</div>
+        </div>
+        <div class="caption">Экономика и магазин</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Версии -->
   <section id="versions">
     <h2 class="section-title">Версии и режим</h2>
     <div class="versions">
@@ -426,6 +733,48 @@
     </div>
   </section>
 
+  <!-- Донат, Правила, Модерация -->
+  <section>
+    <h2 class="section-title">Донат · Правила · Модерация</h2>
+    <div class="three-col">
+
+      <div class="info-card" id="donate">
+        <h3>Донат</h3>
+        <ul>
+          <li>VIP-статус с бонусными китами</li>
+          <li>Префикс в чате и цветной ник</li>
+          <li>Дополнительные приваты</li>
+          <li>Приоритетный вход на сервер</li>
+        </ul>
+        <a class="donate-tag" href="https://t.me/LTSPST_servers" target="_blank" rel="noopener">Поддержать сервер</a>
+      </div>
+
+      <div class="info-card" id="rules">
+        <h3>Правила</h3>
+        <ul>
+          <li>Без читов и запрещённых модов</li>
+          <li>Уважай других игроков</li>
+          <li>Не гриферь и не ломай чужие постройки</li>
+          <li>Не спамь в чате и не рекламируй</li>
+          <li>Слушай администрацию</li>
+        </ul>
+      </div>
+
+      <div class="info-card" id="moderation">
+        <h3>Модерация</h3>
+        <ul>
+          <li>Онлайн-модераторы и админы</li>
+          <li>Быстрое рассмотрение жалоб</li>
+          <li>Честные и прозрачные баны</li>
+          <li>Помощь новичкам в чате</li>
+          <li>Отчёт о нарушениях в Telegram</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CTA -->
   <section>
     <div class="cta">
       <h2>Следи за новостями</h2>
@@ -441,6 +790,7 @@
 </div>
 
 <script>
+  /* ——— Копирование ——— */
   function copyText(text) {
     const status = document.getElementById('copy-status');
     const done = () => {
@@ -453,6 +803,78 @@
       done();
     }
   }
+
+  /* ——— Бургер-меню ——— */
+  const toggle = document.getElementById('menuToggle');
+  const menu = document.getElementById('mobileMenu');
+
+  toggle.addEventListener('click', () => {
+    toggle.classList.toggle('active');
+    menu.classList.toggle('open');
+  });
+
+  // Закрывать меню при клике по ссылке
+  menu.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      toggle.classList.remove('active');
+      menu.classList.remove('open');
+    });
+  });
+
+  /* ——— Снег ——— */
+  (function snow() {
+    const canvas = document.getElementById('snow-canvas');
+    const ctx = canvas.getContext('2d');
+    let W, H;
+    let flakes = [];
+
+    function resize() {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    const COUNT = 90;
+
+    function makeFlake() {
+      return {
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 2.5 + 0.8,
+        speedY: Math.random() * 0.7 + 0.3,
+        speedX: Math.random() * 0.4 - 0.2,
+        alpha: Math.random() * 0.5 + 0.3,
+        phase: Math.random() * Math.PI * 2
+      };
+    }
+
+    for (let i = 0; i < COUNT; i++) flakes.push(makeFlake());
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      for (let f of flakes) {
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${f.alpha})`;
+        ctx.fill();
+
+        f.y += f.speedY;
+        f.x += f.speedX + Math.sin(f.phase) * 0.3;
+        f.phase += 0.008;
+
+        if (f.y > H + 5) {
+          f.y = -5;
+          f.x = Math.random() * W;
+        }
+        if (f.x > W + 5) f.x = -5;
+        if (f.x < -5) f.x = W + 5;
+      }
+      requestAnimationFrame(draw);
+    }
+    draw();
+  })();
 </script>
+
 </body>
-  </html>
+</html>
