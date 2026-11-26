@@ -8,17 +8,25 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
+  @font-face {
+    font-family: 'Mojangles';
+    src: url('../Mojangles.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
   :root { 
     --bg: #0b0d12; --bg-soft: #141821; --card: #181c26; 
     --border: rgba(255, 255, 255, 0.08); --text: #e8ebf2; 
     --muted: #9aa3b5; --accent: #7c5cff; --accent-2: #22d3ee; 
     --grad: linear-gradient(135deg, #7c5cff 0%, #22d3ee 100%); 
-    --pixel-font: 'Press Start 2P', 'Courier New', monospace; 
+    --pixel-font: 'Press Start 2P', 'Courier New', monospace;
+    --java-font: 'Mojangles', 'Courier New', monospace;
   }
   
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
-  body { font-family: 'Press Start 2P', 'Courier New', monospace; background: var(--bg); color: var(--text); line-height: 1.8; overflow-x: hidden; position: relative; }
+  body { font-family: var(--java-font); background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; position: relative; font-size: 18px; }
   
   .bg-grid { position: fixed; inset: 0; z-index: 0; background-image: linear-gradient(rgba(124, 92, 255, 0.10) 1px, transparent 1px), linear-gradient(90deg, rgba(124, 92, 255, 0.10) 1px, transparent 1px); background-size: 48px 48px; pointer-events: none; }
   .bg-glow { position: fixed; inset: 0; background: radial-gradient(circle at 20% 10%, rgba(124, 92, 255, 0.25), transparent 40%), radial-gradient(circle at 80% 30%, rgba(34, 211, 238, 0.18), transparent 40%); pointer-events: none; z-index: 0; }
@@ -26,131 +34,133 @@
   
   .container { position: relative; z-index: 2; max-width: 1080px; margin: 0 auto; padding: 0 24px; }
   
-  /* Навигация */
+  /* --- НАВИГАЦИЯ (ШАПКА) --- */
   nav { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; position: relative; }
-  .brand { font-size: 16px; letter-spacing: 1px; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; text-decoration: none; text-shadow: 0 0 18px rgba(124, 92, 255, 0.35); }
+  
+  .brand {
+    font-family: var(--pixel-font); font-weight: 400; font-size: 18px; letter-spacing: 1px;
+    background: linear-gradient(90deg, #7c5cff, #22d3ee, #7c5cff); background-size: 200% auto;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    text-shadow: 0 0 18px rgba(124,92,255,0.35); text-decoration: none; display: flex; align-items: center;
+    animation: gradient-shift 3s linear infinite;
+  }
+  @keyframes gradient-shift { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
+
   .nav-links { display: flex; align-items: center; gap: 24px; }
-  .nav-links a { color: var(--muted); text-decoration: none; font-size: 10px; transition: color 0.2s; letter-spacing: 0.5px; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-family: var(--pixel-font); font-size: 9px; transition: color 0.2s; letter-spacing: 0.5px; }
   .nav-links a:hover, .nav-links a.active { color: var(--text); }
   
-  /* Бургер */
-  .menu-toggle { display: none; flex-direction: column; justify-content: center; gap: 5px; width: 40px; height: 40px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; padding: 0 9px; transition: border-color 0.2s; z-index: 20; }
-  .menu-toggle:hover { border-color: rgba(124, 92, 255, 0.5); }
-  .menu-toggle span { display: block; height: 2px; width: 100%; background: var(--text); border-radius: 2px; transition: transform 0.25s, opacity 0.25s; }
-  .menu-toggle.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-  .menu-toggle.active span:nth-child(2) { opacity: 0; }
-  .menu-toggle.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-  
-  /* Выезжающее меню */
-  .mobile-menu { position: fixed; top: 0; right: -280px; width: 280px; height: 100vh; background: var(--card); border-left: 1px solid var(--border); box-shadow: -10px 0 30px rgba(0,0,0,0.5); display: flex; flex-direction: column; padding: 80px 24px 24px; gap: 20px; z-index: 15; transition: right 0.3s ease-in-out; }
-  .mobile-menu.open { right: 0; }
-  .mobile-menu a { color: var(--muted); text-decoration: none; font-size: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); transition: color 0.2s; }
-  .mobile-menu a:hover, .mobile-menu a.active { color: var(--text); }
-  
-  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 14; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
-  .overlay.open { opacity: 1; pointer-events: auto; }
-
-  /* Контент */
-  .page-content { padding: 40px 0 80px; text-align: center; }
-  .page-title { font-size: clamp(16px, 3vw, 22px); margin-bottom: 30px; text-shadow: 0 0 20px rgba(34, 211, 238, 0.2); }
-  
-  /* Первая картинка (полный рост) */
-  .main-moder-image {
-    display: flex; justify-content: center; margin-bottom: 40px;
+  /* --- БУРГЕР И МЕНЮ --- */
+  .menu-toggle { 
+    display: none; flex-direction: column; justify-content: center; align-items: center;
+    width: 44px; height: 44px; background: var(--bg-soft); border: 1px solid var(--border); 
+    border-radius: 10px; cursor: pointer; transition: border-color 0.2s; z-index: 50; position: relative; gap: 4px;
   }
+  .menu-toggle:hover { border-color: rgba(124,92,255,0.5); }
+  .menu-toggle span { display: block; height: 2px; width: 20px; background: var(--text); border-radius: 2px; transition: transform 0.25s, opacity 0.25s; }
+  .menu-toggle.active span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+  .menu-toggle.active span:nth-child(2) { opacity: 0; }
+  .menu-toggle.active span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+  
+  .mobile-menu { 
+    position: absolute; top: 75px; right: 24px; width: 220px; background: var(--card); 
+    border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+    display: flex; flex-direction: column; padding: 8px 0; z-index: 40; opacity: 0; 
+    visibility: hidden; transform: translateY(-10px); transition: opacity 0.2s, transform 0.2s, visibility 0.2s; 
+  }
+  .mobile-menu.open { opacity: 1; visibility: visible; transform: translateY(0); }
+  .mobile-menu a { 
+    color: var(--text); text-decoration: none; font-family: var(--pixel-font); font-size: 10px; 
+    padding: 14px 20px; border-bottom: 1px solid var(--border); transition: background 0.2s; display: block; 
+  }
+  .mobile-menu a:last-child { border-bottom: none; }
+  .mobile-menu a:hover, .mobile-menu a.active { background: rgba(255,255,255,0.05); color: var(--accent-2); }
+
+  /* --- КОНТЕНТ --- */
+  .page-content { padding: 20px 0 80px; text-align: center; }
+  .page-title { font-family: var(--pixel-font); font-size: clamp(16px, 3vw, 22px); margin-bottom: 30px; text-shadow: 0 0 20px rgba(34, 211, 238, 0.2); }
+
+  /* --- БЕГУЩАЯ СТРОКА --- */
+  .ticker-wrap {
+    width: 100%; overflow: hidden; background: var(--bg-soft);
+    border: 1px solid var(--border); border-radius: 12px;
+    padding: 12px 0; margin-bottom: 40px;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+  }
+  .ticker {
+    display: inline-block; white-space: nowrap;
+    animation: ticker 15s linear infinite;
+  }
+  .ticker-item {
+    display: inline-block; font-family: var(--pixel-font); font-size: 10px;
+    color: var(--accent-2); margin: 0 30px; text-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
+  }
+  .ticker-item::before { content: '★'; margin-right: 10px; color: var(--accent); }
+  @keyframes ticker {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+  }
+
+  /* Первая картинка (полный рост) */
+  .main-moder-image { display: flex; justify-content: center; margin-bottom: 40px; }
   .main-moder-image img {
     width: 260px; height: auto;
-    filter: drop-shadow(0 10px 25px rgba(0,0,0,0.6));
-    transition: transform 0.3s ease;
+    filter: drop-shadow(0 10px 25px rgba(0,0,0,0.6)); transition: transform 0.3s ease;
   }
-  .main-moder-image img:hover {
-    transform: scale(1.05) translateY(-5px);
-  }
+  .main-moder-image img:hover { transform: scale(1.05) translateY(-5px); }
 
   /* Карточки */
   .info-card { 
     background: var(--card); border: 1px solid var(--border); border-radius: 16px; 
-    padding: 24px; text-align: left; margin-bottom: 30px;
-    transition: transform 0.2s, border-color 0.2s;
+    padding: 24px; text-align: left; margin-bottom: 30px; transition: transform 0.2s, border-color 0.2s;
   }
   .info-card:hover { border-color: rgba(124, 92, 255, 0.4); }
-  .info-card h3 { font-size: 14px; margin-bottom: 16px; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .info-card p { font-size: 10px; color: var(--muted); margin-bottom: 20px; }
+  .info-card h3 { font-family: var(--pixel-font); font-size: 11px; margin-bottom: 16px; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .info-card p { font-family: var(--java-font); font-size: 18px; color: var(--muted); margin-bottom: 20px; line-height: 1.5; }
 
   /* Кнопки скачивания */
   .download-btn {
-    display: inline-flex; align-items: center; gap: 10px;
-    background: var(--bg-soft); border: 1px solid var(--border);
-    padding: 14px 24px; border-radius: 12px;
-    color: var(--text); text-decoration: none; font-size: 10px;
-    transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 10px; background: var(--bg-soft); border: 1px solid var(--border);
+    padding: 14px 24px; border-radius: 12px; color: var(--text); text-decoration: none; font-family: var(--pixel-font); font-size: 9px;
+    transition: all 0.2s; margin-bottom: 10px;
   }
-  .download-btn:hover {
-    background: var(--accent); border-color: var(--accent); color: #fff;
-    transform: translateY(-2px); box-shadow: 0 8px 20px rgba(124, 92, 255, 0.3);
-  }
+  .download-btn:hover { background: var(--accent); border-color: var(--accent); color: #fff; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(124, 92, 255, 0.3); }
   .download-btn svg { width: 18px; height: 18px; fill: currentColor; }
 
   /* --- БЛОК: ВТОРАЯ КАРТИНКА ВПЛОТНУЮ К КАРТОЧКЕ --- */
-  .moder-join-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 10px;
-  }
+  .moder-join-wrapper { display: flex; flex-direction: column; align-items: center; margin-top: 10px; }
 
-  .moder-image-standalone {
-    display: flex;
-    justify-content: center;
-    z-index: 2; 
-    margin-bottom: -15px; /* Картинка наезжает на карточку */
-  }
-  
-  .moder-image-standalone img {
-    width: 220px; 
-    height: auto;
-    filter: drop-shadow(0 15px 25px rgba(0,0,0,0.8)); 
-    transition: transform 0.3s ease;
-  }
-  .moder-image-standalone img:hover {
-    transform: scale(1.05) translateY(-5px);
-  }
+  .moder-image-standalone { display: flex; justify-content: center; z-index: 2; margin-bottom: -15px; }
+  .moder-image-standalone img { width: 220px; height: auto; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.8)); transition: transform 0.3s ease; }
+  .moder-image-standalone img:hover { transform: scale(1.05) translateY(-5px); }
 
   .moder-join-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 35px 24px 24px 24px; /* Отступ сверху для картинки */
-    text-align: left;
-    width: 100%;
-    z-index: 1;
+    background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+    padding: 35px 24px 24px 24px; text-align: left; width: 100%; z-index: 1;
   }
 
   .moder-join-card h3 {
-    font-size: 14px; margin-bottom: 12px; 
+    font-family: var(--pixel-font); font-size: 12px; margin-bottom: 12px; 
     background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent;
     text-align: center;
   }
 
-  .moder-join-card p {
-    font-size: 10px; color: var(--muted); margin-bottom: 20px;
-    text-align: center;
-  }
+  .moder-join-card p { font-family: var(--java-font); font-size: 18px; color: var(--muted); margin-bottom: 20px; text-align: center; line-height: 1.5; }
 
   .req-list { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-top: 20px; margin-bottom: 24px; }
-  .req-list li { font-size: 9px; color: var(--muted); line-height: 1.9; padding-left: 16px; position: relative; }
+  .req-list li { font-family: var(--java-font); font-size: 17px; color: var(--muted); line-height: 1.5; padding-left: 16px; position: relative; }
   .req-list li::before { content: '>'; position: absolute; left: 0; color: var(--accent-2); }
   .req-star { color: #ff4444; margin-left: 4px; font-weight: bold; }
   
   /* Кнопка отправки */
   .donate-tag { 
     display: inline-block; padding: 14px 24px; border-radius: 8px; width: 100%; text-align: center;
-    background: var(--grad); color: #fff; font-size: 10px; text-decoration: none; 
+    background: var(--grad); color: #fff; font-family: var(--pixel-font); font-size: 9px; text-decoration: none; 
     transition: transform 0.15s, box-shadow 0.2s; 
   }
   .donate-tag:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(124, 92, 255, 0.4); }
   
-  footer { text-align: center; color: var(--muted); font-size: 8px; padding: 40px 0 50px; }
+  footer { text-align: center; color: var(--muted); font-family: var(--pixel-font); font-size: 8px; padding: 40px 0 50px; line-height: 1.9; }
   
   @media (max-width: 720px) { 
     .nav-links { display: none; } 
@@ -158,6 +168,7 @@
     .main-moder-image img { width: 200px; }
     .moder-image-standalone img { width: 180px; }
     .moder-image-standalone { margin-bottom: -10px; }
+    .ticker-item { font-size: 9px; margin: 0 15px; }
   }
 </style>
 </head>
@@ -184,9 +195,21 @@
   </nav>
 
   <div class="page-content">
+    
+    <!-- БЕГУЩАЯ СТРОКА -->
+    <div class="ticker-wrap">
+      <div class="ticker">
+        <span class="ticker-item">Действующие модераторы:</span>
+        <span class="ticker-item">Timoxich_Prosto</span>
+        <span class="ticker-item">Igoryanprosto</span>
+        <span class="ticker-item">SPIRIDUY</span>
+        <span class="ticker-item">Swizzzy</span>
+      </div>
+    </div>
+
     <h2 class="page-title">Набор в команду</h2>
 
-    <!-- ПЕРВАЯ КАРТИНКА (в полный рост) -->
+    <!-- ПЕРВАЯ КАРТИНКА -->
     <div class="main-moder-image">
       <img src="moder1.png" alt="Модератор в полный рост">
     </div>
@@ -208,9 +231,8 @@
       </div>
     </div>
 
-    <!-- БЛОК 2: ВТОРАЯ КАРТИНКА ВПЛОТНУЮ С ТЕКСТОМ -->
+    <!-- БЛОК 2: ВТОРАЯ КАРТИНКА -->
     <div class="moder-join-wrapper">
-      
       <div class="moder-image-standalone">
         <img src="moder2.png" alt="Требования к модератору">
       </div>
@@ -230,41 +252,31 @@
           Отправить заявку на почту
         </a>
       </div>
-
     </div>
 
   </div>
 
-  <footer>Ждём тебя на LTSPST Land</footer>
+  <footer>Ждём тебя на LTSPST Land<br><br>©2026 | Проект LTSPST | Официальный сайт</footer>
 </div>
-
-<div class="overlay" id="overlay"></div>
 
 <script>
   const toggle = document.getElementById('menuToggle');
   const menu = document.getElementById('mobileMenu');
-  const overlay = document.getElementById('overlay');
-  
-  toggle.addEventListener('click', () => {
-    toggle.classList.toggle('active');
-    menu.classList.toggle('open');
-    overlay.classList.toggle('open');
-  });
-  
-  overlay.addEventListener('click', () => {
-    toggle.classList.remove('active');
-    menu.classList.remove('open');
-    overlay.classList.remove('open');
-  });
-  
-  menu.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', () => {
-      toggle.classList.remove('active');
-      menu.classList.remove('open');
-      overlay.classList.remove('open');
-    });
+
+  toggle.addEventListener('click', (e) => { 
+    e.stopPropagation();
+    toggle.classList.toggle('active'); 
+    menu.classList.toggle('open'); 
   });
 
+  document.addEventListener('click', (e) => {
+    if (!menu.contains(e.target) && !toggle.contains(e.target)) {
+      toggle.classList.remove('active');
+      menu.classList.remove('open');
+    }
+  });
+
+  // Снег
   (function snow() {
     const canvas = document.getElementById('snow-canvas');
     const ctx = canvas.getContext('2d');
@@ -275,7 +287,7 @@
     function draw() {
       ctx.clearRect(0, 0, W, H);
       for (let f of flakes) {
-        ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2); ctx.fillStyle = `rgba(255, 255, 255, ${f.alpha})`; ctx.fill();
+        ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2); ctx.fillStyle = `rgba(255,255,255,${f.alpha})`; ctx.fill();
         f.y += f.speedY; f.x += f.speedX + Math.sin(f.phase) * 0.3; f.phase += 0.008;
         if (f.y > H + 5) { f.y = -5; f.x = Math.random() * W; }
         if (f.x > W + 5) f.x = -5; if (f.x < -5) f.x = W + 5;
