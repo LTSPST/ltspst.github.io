@@ -41,9 +41,9 @@
   .menu-toggle.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
   .menu-toggle.active span:nth-child(2) { opacity: 0; }
   .menu-toggle.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-  .mobile-menu { position: fixed; top: 0; right: -300px; width: 300px; height: 100vh; background: var(--card); border-left: 1px solid var(--border); box-shadow: -10px 0 30px rgba(0,0,0,0.5); display: flex; flex-direction: column; padding: 90px 24px 24px; gap: 18px; z-index: 30; transition: right 0.3s ease-in-out; pointer-events: auto; }
+  .mobile-menu { position: fixed; top: 0; right: -320px; width: 300px; height: 100vh; background: var(--card); border-left: 1px solid var(--border); box-shadow: -10px 0 30px rgba(0,0,0,0.5); display: flex; flex-direction: column; padding: 90px 24px 24px; gap: 18px; z-index: 30; transition: right 0.3s ease-in-out; pointer-events: auto; }
   .mobile-menu.open { right: 0; }
-  .mobile-menu a { color: var(--muted); text-decoration: none; font-family: var(--pixel-font); font-size: 11px; padding: 14px 0; border-bottom: 1px solid var(--border); transition: color 0.2s; pointer-events: auto; display: block; }
+  .mobile-menu a { color: var(--muted); text-decoration: none; font-family: var(--pixel-font); font-size: 11px; padding: 14px 0; border-bottom: 1px solid var(--border); transition: color 0.2s; pointer-events: auto; display: block; line-height: 1.5; }
   .mobile-menu a:hover { color: var(--text); }
   .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 25; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
   .overlay.open { opacity: 1; pointer-events: auto; }
@@ -209,13 +209,24 @@
     const done = () => { status.textContent = 'Скопировано: ' + text; setTimeout(() => status.textContent = '', 2500); };
     if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(done).catch(done); } else { done(); }
   }
+  
   const toggle = document.getElementById('menuToggle');
   const menu = document.getElementById('mobileMenu');
   const overlay = document.getElementById('overlay');
-  toggle.addEventListener('click', () => { toggle.classList.toggle('active'); menu.classList.toggle('open'); overlay.classList.toggle('open'); });
-  overlay.addEventListener('click', () => { toggle.classList.remove('active'); menu.classList.remove('open'); overlay.classList.remove('open'); });
-  menu.querySelectorAll('a').forEach(link => { link.addEventListener('click', () => { toggle.classList.remove('active'); menu.classList.remove('open'); overlay.classList.remove('open'); }); });
 
+  toggle.addEventListener('click', () => { 
+    toggle.classList.toggle('active'); 
+    menu.classList.toggle('open'); 
+    overlay.classList.toggle('open'); 
+  });
+
+  overlay.addEventListener('click', () => { 
+    toggle.classList.remove('active'); 
+    menu.classList.remove('open'); 
+    overlay.classList.remove('open'); 
+  });
+
+  // Снег
   (function snow() {
     const canvas = document.getElementById('snow-canvas');
     const ctx = canvas.getContext('2d');
