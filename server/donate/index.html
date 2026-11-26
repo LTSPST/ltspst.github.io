@@ -8,17 +8,25 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
+  @font-face {
+    font-family: 'Mojangles';
+    src: url('../Mojangles.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
   :root { 
     --bg: #0b0d12; --bg-soft: #141821; --card: #181c26; 
     --border: rgba(255, 255, 255, 0.08); --text: #e8ebf2; 
     --muted: #9aa3b5; --accent: #7c5cff; --accent-2: #22d3ee; 
     --grad: linear-gradient(135deg, #7c5cff 0%, #22d3ee 100%); 
-    --pixel-font: 'Press Start 2P', 'Courier New', monospace; 
+    --pixel-font: 'Press Start 2P', 'Courier New', monospace;
+    --java-font: 'Mojangles', 'Courier New', monospace;
   }
   
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
-  body { font-family: 'Press Start 2P', 'Courier New', monospace; background: var(--bg); color: var(--text); line-height: 1.8; overflow-x: hidden; position: relative; }
+  body { font-family: var(--java-font); background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; position: relative; font-size: 18px; }
   
   .bg-grid { position: fixed; inset: 0; z-index: 0; background-image: linear-gradient(rgba(124, 92, 255, 0.10) 1px, transparent 1px), linear-gradient(90deg, rgba(124, 92, 255, 0.10) 1px, transparent 1px); background-size: 48px 48px; pointer-events: none; }
   .bg-glow { position: fixed; inset: 0; background: radial-gradient(circle at 20% 10%, rgba(124, 92, 255, 0.25), transparent 40%), radial-gradient(circle at 80% 30%, rgba(34, 211, 238, 0.18), transparent 40%); pointer-events: none; z-index: 0; }
@@ -26,69 +34,134 @@
   
   .container { position: relative; z-index: 2; max-width: 1080px; margin: 0 auto; padding: 0 24px; }
   
-  /* Навигация */
+  /* --- НАВИГАЦИЯ (ШАПКА) --- */
   nav { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; position: relative; }
-  .brand { font-size: 16px; letter-spacing: 1px; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; text-decoration: none; text-shadow: 0 0 18px rgba(124, 92, 255, 0.35); }
+  
+  .brand {
+    font-family: var(--pixel-font);
+    font-weight: 400;
+    font-size: 18px;
+    letter-spacing: 1px;
+    background: linear-gradient(90deg, #7c5cff, #22d3ee, #7c5cff);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 18px rgba(124,92,255,0.35);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    animation: gradient-shift 3s linear infinite;
+  }
+  @keyframes gradient-shift {
+    0% { background-position: 0% center; }
+    100% { background-position: 200% center; }
+  }
+
   .nav-links { display: flex; align-items: center; gap: 24px; }
-  .nav-links a { color: var(--muted); text-decoration: none; font-size: 10px; transition: color 0.2s; letter-spacing: 0.5px; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-family: var(--pixel-font); font-size: 9px; transition: color 0.2s; letter-spacing: 0.5px; }
   .nav-links a:hover, .nav-links a.active { color: var(--text); }
   
-  /* Бургер */
-  .menu-toggle { display: none; flex-direction: column; justify-content: center; gap: 5px; width: 40px; height: 40px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; padding: 0 9px; transition: border-color 0.2s; z-index: 20; }
-  .menu-toggle:hover { border-color: rgba(124, 92, 255, 0.5); }
-  .menu-toggle span { display: block; height: 2px; width: 100%; background: var(--text); border-radius: 2px; transition: transform 0.25s, opacity 0.25s; }
-  .menu-toggle.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  /* --- БУРГЕР И ВЫПАДАЮЩЕЕ МЕНЮ --- */
+  .menu-toggle { 
+    display: none; flex-direction: column; justify-content: center; align-items: center;
+    width: 44px; height: 44px; background: var(--bg-soft); border: 1px solid var(--border); 
+    border-radius: 10px; cursor: pointer; transition: border-color 0.2s; z-index: 50; 
+    position: relative; gap: 4px;
+  }
+  .menu-toggle:hover { border-color: rgba(124,92,255,0.5); }
+  .menu-toggle span { display: block; height: 2px; width: 20px; background: var(--text); border-radius: 2px; transition: transform 0.25s, opacity 0.25s; }
+  .menu-toggle.active span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
   .menu-toggle.active span:nth-child(2) { opacity: 0; }
-  .menu-toggle.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+  .menu-toggle.active span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
   
-  /* Выезжающее меню */
-  .mobile-menu { position: fixed; top: 0; right: -280px; width: 280px; height: 100vh; background: var(--card); border-left: 1px solid var(--border); box-shadow: -10px 0 30px rgba(0,0,0,0.5); display: flex; flex-direction: column; padding: 80px 24px 24px; gap: 20px; z-index: 15; transition: right 0.3s ease-in-out; }
-  .mobile-menu.open { right: 0; }
-  .mobile-menu a { color: var(--muted); text-decoration: none; font-size: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); transition: color 0.2s; }
-  .mobile-menu a:hover, .mobile-menu a.active { color: var(--text); }
-  
-  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 14; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
-  .overlay.open { opacity: 1; pointer-events: auto; }
+  .mobile-menu { 
+    position: absolute; top: 75px; right: 24px; width: 220px; background: var(--card); 
+    border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+    display: flex; flex-direction: column; padding: 8px 0; z-index: 40; opacity: 0; 
+    visibility: hidden; transform: translateY(-10px); transition: opacity 0.2s, transform 0.2s, visibility 0.2s; 
+  }
+  .mobile-menu.open { opacity: 1; visibility: visible; transform: translateY(0); }
+  .mobile-menu a { 
+    color: var(--text); text-decoration: none; font-family: var(--pixel-font); font-size: 10px; 
+    padding: 14px 20px; border-bottom: 1px solid var(--border); transition: background 0.2s; display: block; 
+  }
+  .mobile-menu a:last-child { border-bottom: none; }
+  .mobile-menu a:hover, .mobile-menu a.active { background: rgba(255,255,255,0.05); color: var(--accent-2); }
 
-  /* Контент */
+  /* --- КОНТЕНТ --- */
   .page-content { padding: 40px 0 80px; text-align: center; }
-  .page-title { font-size: clamp(16px, 3vw, 22px); margin-bottom: 20px; text-shadow: 0 0 20px rgba(34, 211, 238, 0.2); }
+  .page-title { font-family: var(--pixel-font); font-size: clamp(16px, 3vw, 22px); margin-bottom: 30px; text-shadow: 0 0 20px rgba(34, 211, 238, 0.2); }
   
-  /* НОВЫЙ БЛОК ДЛЯ КАРТИНКИ */
-  .donate-hero-image {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 40px;
-  }
+  .donate-hero-image { display: flex; justify-content: center; margin-bottom: 50px; }
   .donate-hero-image img {
-    max-width: 100%;
-    width: 350px; /* Размер картинки */
-    height: auto;
-    filter: drop-shadow(0 10px 25px rgba(0,0,0,0.6)); /* Тень для объема */
-    transition: transform 0.3s ease;
+    max-width: 100%; width: 350px; height: auto;
+    filter: drop-shadow(0 10px 25px rgba(0,0,0,0.6)); transition: transform 0.3s ease;
   }
-  .donate-hero-image img:hover {
-    transform: scale(1.05) translateY(-5px); /* Легкая анимация при наведении */
+  .donate-hero-image img:hover { transform: scale(1.05) translateY(-5px); }
+
+  /* --- БЛОКИ СО СВАЙПОМ --- */
+  .section-subtitle {
+    font-family: var(--pixel-font); font-size: 14px; color: var(--text);
+    text-align: left; margin: 40px 0 20px; display: flex; align-items: center; gap: 10px;
+  }
+  .section-subtitle::after {
+    content: ''; flex-grow: 1; height: 1px; background: var(--border);
   }
 
-  .three-col { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; text-align: left; }
-  .info-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 26px 24px; transition: transform 0.2s, border-color 0.2s; }
+  .scroll-container {
+    display: flex; gap: 16px; overflow-x: auto; padding-bottom: 20px;
+    scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin; scrollbar-color: var(--accent) var(--bg-soft);
+  }
+  .scroll-container::-webkit-scrollbar { height: 6px; }
+  .scroll-container::-webkit-scrollbar-track { background: var(--bg-soft); border-radius: 10px; }
+  .scroll-container::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+
+  .info-card {
+    min-width: 280px; max-width: 300px; background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 24px; text-align: left; scroll-snap-align: start;
+    transition: transform 0.2s, border-color 0.2s; flex-shrink: 0;
+    display: flex; flex-direction: column;
+  }
   .info-card:hover { transform: translateY(-4px); border-color: rgba(124, 92, 255, 0.4); }
-  .info-card h3 { font-size: 12px; margin-bottom: 18px; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .info-card ul { list-style: none; display: flex; flex-direction: column; gap: 12px; }
-  .info-card li { font-size: 9px; color: var(--muted); padding-left: 16px; position: relative; line-height: 1.9; }
-  .info-card li::before { content: '>'; position: absolute; left: 0; color: var(--accent-2); }
   
-  .btn-center { margin-top: 40px; }
-  .donate-tag { display: inline-block; padding: 14px 24px; border-radius: 8px; background: var(--grad); color: #fff; font-size: 10px; text-decoration: none; transition: transform 0.15s, box-shadow 0.2s; }
-  .donate-tag:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(124, 92, 255, 0.4); }
+  .info-card h3 { font-family: var(--pixel-font); font-size: 11px; margin-bottom: 16px; text-transform: uppercase; }
   
-  footer { text-align: center; color: var(--muted); font-size: 8px; padding: 40px 0 50px; }
+  /* Цвета для привилегий */
+  .color-player { color: #22d3ee; } /* Голубой */
+  .color-creative { color: #2dd4bf; } /* Бирюзовый */
+  .color-admin { color: #4ade80; } /* Зелёный */
+  .color-owner { color: #f87171; } /* Красный */
+  
+  /* Цвета для спец. привилегий */
+  .color-sponsor { color: #1e3a8a; } /* Тёмно-синий */
+  .color-old { color: #fb923c; } /* Оранжевый */
+
+  .info-card ul { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: auto; }
+  .info-card li { font-family: var(--java-font); font-size: 16px; color: var(--muted); padding-left: 14px; position: relative; line-height: 1.4; }
+  .info-card li::before { content: '>'; position: absolute; left: 0; color: var(--accent); font-size: 12px; top: 2px; }
+  
+  .price-tag { margin-top: 20px; font-family: var(--pixel-font); font-size: 10px; color: var(--accent-2); border-top: 1px solid var(--border); padding-top: 14px; text-align: right; }
+  .card-coming-soon { display: grid; place-items: center; text-align: center; opacity: 0.5; border-style: dashed; }
+  .card-coming-soon p { font-family: var(--pixel-font); font-size: 10px; color: var(--muted); line-height: 1.6; }
+
+  /* --- КНОПКА СВЯЗИ --- */
+  .btn-center { margin-top: 50px; text-align: center; }
+  .donate-btn { 
+    display: inline-block; padding: 16px 32px; border-radius: 12px; background: var(--grad); 
+    color: #fff; font-family: var(--pixel-font); font-size: 10px; text-decoration: none; 
+    transition: transform 0.15s, box-shadow 0.2s; 
+  }
+  .donate-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(124, 92, 255, 0.4); }
+  
+  footer { text-align: center; color: var(--muted); font-family: var(--pixel-font); font-size: 8px; padding: 40px 0 50px; line-height: 1.9; }
   
   @media (max-width: 720px) { 
     .nav-links { display: none; } 
     .menu-toggle { display: flex; } 
-    .donate-hero-image img { width: 280px; } /* Чуть меньше на телефонах */
+    .donate-hero-image img { width: 280px; }
+    .info-card { min-width: 260px; }
   }
 </style>
 </head>
@@ -115,83 +188,142 @@
   </nav>
 
   <div class="page-content">
-    <h2 class="page-title">Поддержка сервера</h2>
+    <h2 class="page-title">Донаты и привилегии</h2>
     
-    <!-- БЛОК С ВАШЕЙ КАРТИНКОЙ -->
     <div class="donate-hero-image">
       <img src="donate.png" alt="Донат Minecraft">
     </div>
 
-    <div class="three-col">
+    <!-- БЛОК 1: ПРИВИЛЕГИИ -->
+    <h3 class="section-subtitle">Привилегии</h3>
+    <div class="scroll-container">
+      
+      <!-- Player -->
       <div class="info-card">
-        <h3>VIP-статус</h3>
+        <h3 class="color-player">Player</h3>
         <ul>
-          <li>Бонусные киты и наборы</li>
-          <li>Префикс в чате и цветной ник</li>
-          <li>Дополнительные приваты</li>
-          <li>Приоритетный вход на сервер</li>
-          <li>Доступ к закрытым событиям</li>
+          <li>/spawn - телепортация на спавн</li>
+          <li>/sethome, home, delhome - управление точками дома</li>
+          <li>/tpa, tpaccept, tpdeny - управление телепортациями</li>
+          <li>/warp - телепорт по варпам сервера (доступ к варпам игроков ограничен)</li>
         </ul>
+        <div class="price-tag">Стоимость: 0₽</div>
       </div>
+
+      <!-- Creative -->
       <div class="info-card">
-        <h3>Как оплатить</h3>
+        <h3 class="color-creative">Creative</h3>
         <ul>
-          <li>Напишите в Telegram-бот</li>
-          <li>Выберите нужный товар</li>
-          <li>Оплатите удобным способом</li>
-          <li>Пришлите чек администратору</li>
-          <li>Получите бонусы в игре</li>
+          <li>/gmc, gms - переключение режимов</li>
         </ul>
+        <div class="price-tag">Стоимость: 10₽</div>
       </div>
+
+      <!-- Admin -->
       <div class="info-card">
-        <h3>Важно знать</h3>
+        <h3 class="color-admin">Admin</h3>
         <ul>
-          <li>Донат — добровольная поддержка</li>
-          <li>Возврат средств не предусмотрен</li>
-          <li>Все привилегии выдаются вручную</li>
-          <li>По вопросам — только в Telegram</li>
-          <li>Не передавайте данные карт в игре</li>
+          <li>/warp - доступ к варпу игроков</li>
+          <li>/tp - телепорт без разрешения игрока</li>
+          <li>/kick - кик игрока за нарушение правил</li>
+          <li>/vanish - для слежки без видимости</li>
         </ul>
+        <div class="price-tag">Стоимость: 50₽</div>
       </div>
+
+      <!-- Owner -->
+      <div class="info-card">
+        <h3 class="color-owner">Owner</h3>
+        <ul>
+          <li>/kick, ban, mute - команды для моделирования</li>
+          <li>//pos1, //pos2, /wand - использование WorldEdit</li>
+          <li>И многое другое</li>
+        </ul>
+        <div class="price-tag">Стоимость: 150₽</div>
+      </div>
+
     </div>
 
+    <!-- БЛОК 2: КИТЫ -->
+    <h3 class="section-subtitle">Киты</h3>
+    <div class="scroll-container">
+      
+      <!-- Кит LTSPST -->
+      <div class="info-card">
+        <h3 style="color: #7c5cff;">Кит LTSPST</h3>
+        <ul>
+          <li>Зачарованный алмазный меч (Острота 3, Заговор огня 1, Бич членистоногих 2)</li>
+          <li>Зачарованная алмазная кирка (Удача 2, Эффективность 2)</li>
+          <li>Зачарованный алмазный топор (Эффективность 2)</li>
+          <li>Зачарованный лук (Мощь 2, Заговор огня 2)</li>
+          <li>Зачарованная алмазная броня (Защита 3, Шипы 2)</li>
+          <li>Зачарованные алмазные ботинки (Ледоход)</li>
+          <li>Щит (Починка)</li>
+          <li>5 золотых яблок</li>
+        </ul>
+      </div>
+
+      <!-- Заглушка -->
+      <div class="info-card card-coming-soon">
+        <p>Следующие киты<br>будут добавлены позже</p>
+      </div>
+
+    </div>
+
+    <!-- БЛОК 3: СПЕЦИАЛЬНЫЕ ПРИВИЛЕГИИ -->
+    <h3 class="section-subtitle">Специальные привилегии</h3>
+    <div class="scroll-container">
+      
+      <!-- SPONSOR -->
+      <div class="info-card">
+        <h3 class="color-sponsor">SPONSOR</h3>
+        <ul>
+          <li>Префикс над головой</li>
+          <li>Место на доске почёта в лобби сервера</li>
+        </ul>
+        <div class="price-tag">Стоимость: от 300₽ / 6 мес</div>
+      </div>
+
+      <!-- OLD -->
+      <div class="info-card">
+        <h3 class="color-old">OLD</h3>
+        <ul>
+          <li>Префикс над головой</li>
+        </ul>
+        <div class="price-tag">Стоимость: от 50₽ / 6 мес</div>
+      </div>
+
+    </div>
+
+    <!-- КНОПКА СВЯЗИ -->
     <div class="btn-center">
-      <a class="donate-tag" href="https://t.me/LTSPST_servers" target="_blank" rel="noopener">
-        Написать в Telegram
+      <a class="donate-btn" href="https://t.me/Pine21?text=Привет!%20Хочу%20купить%20донат%20на%20сервере%20LTSPST.%0A%0AМой%20ник%20в%20игре:%20[Впиши%20свой%20ник]%0AЖелаемая%20привилегия/кит:%20[Впиши%20название]" target="_blank" rel="noopener">
+        Купить донат (Telegram)
       </a>
     </div>
   </div>
 
-  <footer>Ждём тебя на LTSPST Land</footer>
+  <footer>Ждём тебя на LTSPST Land<br><br>©2026 | Проект LTSPST | Официальный сайт</footer>
 </div>
-
-<div class="overlay" id="overlay"></div>
 
 <script>
   const toggle = document.getElementById('menuToggle');
   const menu = document.getElementById('mobileMenu');
-  const overlay = document.getElementById('overlay');
-  
-  toggle.addEventListener('click', () => {
-    toggle.classList.toggle('active');
-    menu.classList.toggle('open');
-    overlay.classList.toggle('open');
-  });
-  
-  overlay.addEventListener('click', () => {
-    toggle.classList.remove('active');
-    menu.classList.remove('open');
-    overlay.classList.remove('open');
-  });
-  
-  menu.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', () => {
-      toggle.classList.remove('active');
-      menu.classList.remove('open');
-      overlay.classList.remove('open');
-    });
+
+  toggle.addEventListener('click', (e) => { 
+    e.stopPropagation();
+    toggle.classList.toggle('active'); 
+    menu.classList.toggle('open'); 
   });
 
+  document.addEventListener('click', (e) => {
+    if (!menu.contains(e.target) && !toggle.contains(e.target)) {
+      toggle.classList.remove('active');
+      menu.classList.remove('open');
+    }
+  });
+
+  // Снег
   (function snow() {
     const canvas = document.getElementById('snow-canvas');
     const ctx = canvas.getContext('2d');
@@ -202,7 +334,7 @@
     function draw() {
       ctx.clearRect(0, 0, W, H);
       for (let f of flakes) {
-        ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2); ctx.fillStyle = `rgba(255, 255, 255, ${f.alpha})`; ctx.fill();
+        ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2); ctx.fillStyle = `rgba(255,255,255,${f.alpha})`; ctx.fill();
         f.y += f.speedY; f.x += f.speedX + Math.sin(f.phase) * 0.3; f.phase += 0.008;
         if (f.y > H + 5) { f.y = -5; f.x = Math.random() * W; }
         if (f.x > W + 5) f.x = -5; if (f.x < -5) f.x = W + 5;
