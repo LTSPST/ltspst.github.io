@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Донат — LTSPST Land</title>
+<title>Донат — LTSPST Land | Скидки 15%</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -22,6 +22,7 @@
     --grad: linear-gradient(135deg, #7c5cff 0%, #22d3ee 100%); 
     --pixel-font: 'Press Start 2P', 'Courier New', monospace;
     --java-font: 'Mojangles', 'Courier New', monospace;
+    --discount: #facc15;
   }
   
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -34,7 +35,6 @@
   
   .container { position: relative; z-index: 2; max-width: 1080px; margin: 0 auto; padding: 0 24px; }
   
-  /* --- НАВИГАЦИЯ (ШАПКА) --- */
   nav { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; position: relative; }
   
   .brand {
@@ -62,7 +62,6 @@
   .nav-links a { color: var(--muted); text-decoration: none; font-family: var(--pixel-font); font-size: 9px; transition: color 0.2s; letter-spacing: 0.5px; }
   .nav-links a:hover, .nav-links a.active { color: var(--text); }
   
-  /* --- БУРГЕР И ВЫПАДАЮЩЕЕ МЕНЮ --- */
   .menu-toggle { 
     display: none; flex-direction: column; justify-content: center; align-items: center;
     width: 44px; height: 44px; background: var(--bg-soft); border: 1px solid var(--border); 
@@ -89,9 +88,27 @@
   .mobile-menu a:last-child { border-bottom: none; }
   .mobile-menu a:hover, .mobile-menu a.active { background: rgba(255,255,255,0.05); color: var(--accent-2); }
 
-  /* --- КОНТЕНТ --- */
   .page-content { padding: 40px 0 80px; text-align: center; }
-  .page-title { font-family: var(--pixel-font); font-size: clamp(16px, 3vw, 22px); margin-bottom: 30px; text-shadow: 0 0 20px rgba(34, 211, 238, 0.2); }
+  .page-title { font-family: var(--pixel-font); font-size: clamp(16px, 3vw, 22px); margin-bottom: 10px; text-shadow: 0 0 20px rgba(34, 211, 238, 0.2); }
+  
+  .discount-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #facc15, #f59e0b);
+    color: #0b0d12;
+    font-family: var(--pixel-font);
+    font-size: 11px;
+    padding: 8px 18px;
+    border-radius: 30px;
+    letter-spacing: 1px;
+    margin-bottom: 30px;
+    box-shadow: 0 0 20px rgba(250, 204, 21, 0.4);
+    animation: pulse-discount 2s infinite;
+  }
+  @keyframes pulse-discount {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+    100% { transform: scale(1); }
+  }
   
   .donate-hero-image { display: flex; justify-content: center; margin-bottom: 50px; }
   .donate-hero-image img {
@@ -100,13 +117,23 @@
   }
   .donate-hero-image img:hover { transform: scale(1.05) translateY(-5px); }
 
-  /* --- БЛОКИ СО СВАЙПОМ --- */
   .section-subtitle {
     font-family: var(--pixel-font); font-size: 14px; color: var(--text);
     text-align: left; margin: 40px 0 20px; display: flex; align-items: center; gap: 10px;
   }
   .section-subtitle::after {
     content: ''; flex-grow: 1; height: 1px; background: var(--border);
+  }
+  .section-subtitle .sub-discount {
+    font-family: var(--pixel-font);
+    font-size: 9px;
+    color: var(--discount);
+    background: rgba(250, 204, 21, 0.12);
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid rgba(250, 204, 21, 0.3);
+    margin-left: 10px;
+    white-space: nowrap;
   }
 
   .scroll-container {
@@ -128,25 +155,49 @@
   
   .info-card h3 { font-family: var(--pixel-font); font-size: 11px; margin-bottom: 16px; text-transform: uppercase; }
   
-  /* Цвета для привилегий */
-  .color-player { color: #22d3ee; } /* Голубой */
-  .color-creative { color: #2dd4bf; } /* Бирюзовый */
-  .color-admin { color: #4ade80; } /* Зелёный */
-  .color-owner { color: #f87171; } /* Красный */
-  
-  /* Цвета для спец. привилегий */
-  .color-sponsor { color: #1e3a8a; } /* Тёмно-синий */
-  .color-old { color: #fb923c; } /* Оранжевый */
+  .color-player { color: #22d3ee; }
+  .color-creative { color: #2dd4bf; }
+  .color-admin { color: #4ade80; }
+  .color-owner { color: #f87171; }
+  .color-sponsor { color: #60a5fa; }
+  .color-old { color: #fb923c; }
 
   .info-card ul { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: auto; }
   .info-card li { font-family: var(--java-font); font-size: 16px; color: var(--muted); padding-left: 14px; position: relative; line-height: 1.4; }
   .info-card li::before { content: '>'; position: absolute; left: 0; color: var(--accent); font-size: 12px; top: 2px; }
   
-  .price-tag { margin-top: 20px; font-family: var(--pixel-font); font-size: 10px; color: var(--accent-2); border-top: 1px solid var(--border); padding-top: 14px; text-align: right; }
+  .price-tag { 
+    margin-top: 20px; 
+    font-family: var(--pixel-font); 
+    font-size: 10px; 
+    color: var(--accent-2); 
+    border-top: 1px solid var(--border); 
+    padding-top: 14px; 
+    text-align: right; 
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .price-old {
+    font-size: 8px;
+    color: var(--muted);
+    text-decoration: line-through;
+    opacity: 0.7;
+  }
+  .price-new {
+    font-size: 11px;
+    color: var(--discount);
+    font-weight: bold;
+  }
+  .price-label {
+    font-size: 8px;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+  }
+  
   .card-coming-soon { display: grid; place-items: center; text-align: center; opacity: 0.5; border-style: dashed; }
   .card-coming-soon p { font-family: var(--pixel-font); font-size: 10px; color: var(--muted); line-height: 1.6; }
 
-  /* --- КНОПКА СВЯЗИ --- */
   .btn-center { margin-top: 50px; text-align: center; }
   .donate-btn { 
     display: inline-block; padding: 16px 32px; border-radius: 12px; background: var(--grad); 
@@ -162,6 +213,7 @@
     .menu-toggle { display: flex; } 
     .donate-hero-image img { width: 280px; }
     .info-card { min-width: 260px; }
+    .section-subtitle { flex-wrap: wrap; }
   }
 </style>
 </head>
@@ -190,12 +242,14 @@
   <div class="page-content">
     <h2 class="page-title">Донаты и привилегии</h2>
     
+    <div class="discount-badge">🔥 СКИДКА 15% НА ВСЁ 🔥</div>
+    
     <div class="donate-hero-image">
       <img src="donate.png" alt="Донат Minecraft">
     </div>
 
     <!-- БЛОК 1: ПРИВИЛЕГИИ -->
-    <h3 class="section-subtitle">Привилегии</h3>
+    <h3 class="section-subtitle">Привилегии <span class="sub-discount">-15%</span></h3>
     <div class="scroll-container">
       
       <!-- Player -->
@@ -207,7 +261,10 @@
           <li>/tpa, tpaccept, tpdeny - управление телепортациями</li>
           <li>/warp - телепорт по варпам сервера (доступ к варпам игроков ограничен)</li>
         </ul>
-        <div class="price-tag">Стоимость: 0₽</div>
+        <div class="price-tag">
+          <span class="price-label">Стоимость:</span>
+          <span class="price-new">0₽</span>
+        </div>
       </div>
 
       <!-- Creative -->
@@ -216,7 +273,11 @@
         <ul>
           <li>/gmc, gms - переключение режимов</li>
         </ul>
-        <div class="price-tag">Стоимость: 10₽</div>
+        <div class="price-tag">
+          <span class="price-label">Стоимость со скидкой:</span>
+          <span class="price-old">10₽</span>
+          <span class="price-new">8.5₽</span>
+        </div>
       </div>
 
       <!-- Admin -->
@@ -228,7 +289,11 @@
           <li>/kick - кик игрока за нарушение правил</li>
           <li>/vanish - для слежки без видимости</li>
         </ul>
-        <div class="price-tag">Стоимость: 50₽</div>
+        <div class="price-tag">
+          <span class="price-label">Стоимость со скидкой:</span>
+          <span class="price-old">50₽</span>
+          <span class="price-new">42.5₽</span>
+        </div>
       </div>
 
       <!-- Owner -->
@@ -239,13 +304,17 @@
           <li>//pos1, //pos2, /wand - использование WorldEdit</li>
           <li>И многое другое</li>
         </ul>
-        <div class="price-tag">Стоимость: 150₽</div>
+        <div class="price-tag">
+          <span class="price-label">Стоимость со скидкой:</span>
+          <span class="price-old">150₽</span>
+          <span class="price-new">127.5₽</span>
+        </div>
       </div>
 
     </div>
 
     <!-- БЛОК 2: КИТЫ -->
-    <h3 class="section-subtitle">Киты</h3>
+    <h3 class="section-subtitle">Киты <span class="sub-discount">-15%</span></h3>
     <div class="scroll-container">
       
       <!-- Кит LTSPST -->
@@ -261,6 +330,10 @@
           <li>Щит (Починка)</li>
           <li>5 золотых яблок</li>
         </ul>
+        <div class="price-tag">
+          <span class="price-label">Цена со скидкой (уточняйте):</span>
+          <span class="price-new">-15%</span>
+        </div>
       </div>
 
       <!-- Заглушка -->
@@ -271,7 +344,7 @@
     </div>
 
     <!-- БЛОК 3: СПЕЦИАЛЬНЫЕ ПРИВИЛЕГИИ -->
-    <h3 class="section-subtitle">Специальные привилегии</h3>
+    <h3 class="section-subtitle">Специальные привилегии <span class="sub-discount">-15%</span></h3>
     <div class="scroll-container">
       
       <!-- SPONSOR -->
@@ -281,7 +354,11 @@
           <li>Префикс над головой</li>
           <li>Место на доске почёта в лобби сервера</li>
         </ul>
-        <div class="price-tag">Стоимость: от 300₽ / 6 мес</div>
+        <div class="price-tag">
+          <span class="price-label">Стоимость со скидкой:</span>
+          <span class="price-old">от 300₽ / 6 мес</span>
+          <span class="price-new">от 255₽ / 6 мес</span>
+        </div>
       </div>
 
       <!-- OLD -->
@@ -290,15 +367,19 @@
         <ul>
           <li>Префикс над головой</li>
         </ul>
-        <div class="price-tag">Стоимость: от 50₽ / 6 мес</div>
+        <div class="price-tag">
+          <span class="price-label">Стоимость со скидкой:</span>
+          <span class="price-old">от 50₽ / 6 мес</span>
+          <span class="price-new">от 42.5₽ / 6 мес</span>
+        </div>
       </div>
 
     </div>
 
     <!-- КНОПКА СВЯЗИ -->
     <div class="btn-center">
-      <a class="donate-btn" href="https://t.me/Pine21?text=Привет!%20Хочу%20купить%20донат%20на%20сервере%20LTSPST.%0A%0AМой%20ник%20в%20игре:%20[Впиши%20свой%20ник]%0AЖелаемая%20привилегия/кит:%20[Впиши%20название]" target="_blank" rel="noopener">
-        Купить донат (Telegram)
+      <a class="donate-btn" href="https://t.me/Pine21?text=Привет!%20Хочу%20купить%20донат%20на%20сервере%20LTSPST%20со%20скидкой%2015%25.%0A%0AМой%20ник%20в%20игре:%20[Впиши%20свой%20ник]%0AЖелаемая%20привилегия/кит:%20[Впиши%20название]" target="_blank" rel="noopener">
+        Купить донат со скидкой (Telegram)
       </a>
     </div>
   </div>
@@ -323,7 +404,6 @@
     }
   });
 
-  // Снег
   (function snow() {
     const canvas = document.getElementById('snow-canvas');
     const ctx = canvas.getContext('2d');
