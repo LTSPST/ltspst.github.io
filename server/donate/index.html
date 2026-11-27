@@ -194,6 +194,24 @@
     color: var(--muted);
     letter-spacing: 0.5px;
   }
+
+  .buy-btn {
+    display: block;
+    width: 100%;
+    margin-top: 14px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: none;
+    background: var(--grad);
+    color: #fff;
+    font-family: var(--pixel-font);
+    font-size: 9px;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.2s;
+  }
+  .buy-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(124, 92, 255, 0.4); }
+  .buy-btn:active { transform: translateY(0); }
   
   .card-coming-soon { display: grid; place-items: center; text-align: center; opacity: 0.5; border-style: dashed; }
   .card-coming-soon p { font-family: var(--pixel-font); font-size: 10px; color: var(--muted); line-height: 1.6; }
@@ -207,6 +225,125 @@
   .donate-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(124, 92, 255, 0.4); }
   
   footer { text-align: center; color: var(--muted); font-family: var(--pixel-font); font-size: 8px; padding: 40px 0 50px; line-height: 1.9; }
+
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 100;
+    background: rgba(5, 7, 12, 0.8);
+    backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.25s, visibility 0.25s;
+  }
+  .modal-overlay.open { opacity: 1; visibility: visible; }
+
+  .modal {
+    background: var(--card);
+    border: 1px solid rgba(124, 92, 255, 0.35);
+    border-radius: 20px;
+    padding: 32px 28px 28px;
+    width: 100%;
+    max-width: 440px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.7), 0 0 40px rgba(124,92,255,0.15);
+    transform: translateY(20px) scale(0.97);
+    transition: transform 0.25s;
+    text-align: left;
+  }
+  .modal-overlay.open .modal { transform: translateY(0) scale(1); }
+
+  .modal-close {
+    position: absolute; top: 14px; right: 14px;
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg-soft);
+    color: var(--muted);
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .modal-close:hover { color: var(--text); border-color: rgba(248, 113, 113, 0.6); }
+
+  .modal-title {
+    font-family: var(--pixel-font);
+    font-size: 12px;
+    color: var(--text);
+    margin-bottom: 14px;
+    padding-right: 30px;
+    line-height: 1.5;
+  }
+  .modal-desc {
+    font-family: var(--java-font);
+    font-size: 16px;
+    color: var(--muted);
+    margin-bottom: 22px;
+    line-height: 1.5;
+  }
+  .modal-label {
+    display: block;
+    font-family: var(--pixel-font);
+    font-size: 8px;
+    color: var(--accent-2);
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+  .modal-input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--bg-soft);
+    color: var(--text);
+    font-family: var(--java-font);
+    font-size: 17px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    margin-bottom: 18px;
+  }
+  .modal-input::placeholder { color: rgba(154, 163, 181, 0.5); }
+  .modal-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124, 92, 255, 0.2); }
+
+  .modal-note {
+    font-family: var(--java-font);
+    font-size: 15px;
+    color: var(--discount);
+    background: rgba(250, 204, 21, 0.08);
+    border: 1px solid rgba(250, 204, 21, 0.25);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 20px;
+    line-height: 1.45;
+  }
+
+  .modal-submit {
+    display: block;
+    width: 100%;
+    padding: 15px 16px;
+    border-radius: 12px;
+    border: none;
+    background: var(--grad);
+    color: #fff;
+    font-family: var(--pixel-font);
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.2s, opacity 0.2s;
+  }
+  .modal-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(124, 92, 255, 0.4); }
+  .modal-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .modal-error {
+    font-family: var(--java-font);
+    font-size: 15px;
+    color: #f87171;
+    min-height: 20px;
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
   
   @media (max-width: 720px) { 
     .nav-links { display: none; } 
@@ -214,6 +351,7 @@
     .donate-hero-image img { width: 280px; }
     .info-card { min-width: 260px; }
     .section-subtitle { flex-wrap: wrap; }
+    .modal { padding: 28px 22px 24px; }
   }
 </style>
 </head>
@@ -265,6 +403,10 @@
           <span class="price-label">Стоимость:</span>
           <span class="price-new">0₽</span>
         </div>
+        <button class="buy-btn" 
+          data-name="Player" 
+          data-desc="Бесплатная базовая привилегия с основными командами для комфортной игры." 
+          data-price="0">Купить</button>
       </div>
 
       <!-- Creative -->
@@ -278,6 +420,10 @@
           <span class="price-old">10₽</span>
           <span class="price-new">8.5₽</span>
         </div>
+        <button class="buy-btn" 
+          data-name="Creative" 
+          data-desc="Переключение между режимами игры: креатив и выживание. Полезно для строительства и тестов." 
+          data-price="8.5">Купить</button>
       </div>
 
       <!-- Admin -->
@@ -294,6 +440,10 @@
           <span class="price-old">50₽</span>
           <span class="price-new">42.5₽</span>
         </div>
+        <button class="buy-btn" 
+          data-name="Admin" 
+          data-desc="Расширенные права: телепорт к игрокам, варпы, кик нарушителей и режим невидимости для слежки." 
+          data-price="42.5">Купить</button>
       </div>
 
       <!-- Owner -->
@@ -309,6 +459,10 @@
           <span class="price-old">150₽</span>
           <span class="price-new">127.5₽</span>
         </div>
+        <button class="buy-btn" 
+          data-name="Owner" 
+          data-desc="Максимальный набор прав: бан/мут/кик, WorldEdit для строительства, и другие возможности." 
+          data-price="127.5">Купить</button>
       </div>
 
     </div>
@@ -334,6 +488,10 @@
           <span class="price-label">Цена со скидкой (уточняйте):</span>
           <span class="price-new">-15%</span>
         </div>
+        <button class="buy-btn" 
+          data-name="Кит LTSPST" 
+          data-desc="Полный набор зачарованного алмазного снаряжения и оружия для уверенного старта." 
+          data-price="уточняется">Купить</button>
       </div>
 
       <!-- Заглушка -->
@@ -359,6 +517,10 @@
           <span class="price-old">от 300₽ / 6 мес</span>
           <span class="price-new">от 255₽ / 6 мес</span>
         </div>
+        <button class="buy-btn" 
+          data-name="SPONSOR" 
+          data-desc="Уникальный префикс над головой и место на доске почёта в лобби сервера на 6 месяцев." 
+          data-price="от 255 / 6 мес">Купить</button>
       </div>
 
       <!-- OLD -->
@@ -372,6 +534,10 @@
           <span class="price-old">от 50₽ / 6 мес</span>
           <span class="price-new">от 42.5₽ / 6 мес</span>
         </div>
+        <button class="buy-btn" 
+          data-name="OLD" 
+          data-desc="Стильный префикс над головой на 6 месяцев для старых и верных игроков." 
+          data-price="от 42.5 / 6 мес">Купить</button>
       </div>
 
     </div>
@@ -387,16 +553,33 @@
   <footer>Ждём тебя на LTSPST Land<br><br>©2026 | Проект LTSPST | Официальный сайт</footer>
 </div>
 
+<!-- МОДАЛЬНОЕ ОКНО -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" role="dialog" aria-modal="true">
+    <button class="modal-close" id="modalClose" aria-label="Закрыть">×</button>
+    <div class="modal-title" id="modalTitle">Название товара</div>
+    <div class="modal-desc" id="modalDesc">Описание товара</div>
+    <label class="modal-label" for="nickInput">Ваш ник в игре</label>
+    <input type="text" class="modal-input" id="nickInput" placeholder="Например: Steve123" maxlength="16" autocomplete="off">
+    <div class="modal-note">Вы будете перенаправлены в Telegram для продолжения покупки. Время занимает от 12 до 48 часов.</div>
+    <div class="modal-error" id="modalError"></div>
+    <button class="modal-submit" id="modalSubmit">Перейти в Telegram</button>
+  </div>
+</div>
+
 <script>
+  /* ===== НАСТРОЙКИ ===== */
+  const TG_LINK = 'https://t.me/Pine21';
+  /* ===================== */
+
+  // Меню
   const toggle = document.getElementById('menuToggle');
   const menu = document.getElementById('mobileMenu');
-
   toggle.addEventListener('click', (e) => { 
     e.stopPropagation();
     toggle.classList.toggle('active'); 
     menu.classList.toggle('open'); 
   });
-
   document.addEventListener('click', (e) => {
     if (!menu.contains(e.target) && !toggle.contains(e.target)) {
       toggle.classList.remove('active');
@@ -404,6 +587,86 @@
     }
   });
 
+  // Модалка
+  const overlay = document.getElementById('modalOverlay');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalDesc = document.getElementById('modalDesc');
+  const nickInput = document.getElementById('nickInput');
+  const modalError = document.getElementById('modalError');
+  const modalSubmit = document.getElementById('modalSubmit');
+  const modalClose = document.getElementById('modalClose');
+
+  let currentItem = null;
+
+  function openModal(item) {
+    currentItem = item;
+    modalTitle.textContent = item.name;
+    modalDesc.textContent = item.desc;
+    modalError.textContent = '';
+    nickInput.value = '';
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => nickInput.focus(), 150);
+  }
+
+  function closeModal() {
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+    currentItem = null;
+  }
+
+  document.querySelectorAll('.buy-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      openModal({
+        name: btn.dataset.name,
+        desc: btn.dataset.desc,
+        price: btn.dataset.price
+      });
+    });
+  });
+
+  modalClose.addEventListener('click', closeModal);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal(); });
+
+  // Отправка в Telegram
+  function submitOrder() {
+    const nick = nickInput.value.trim();
+    if (!nick) {
+      modalError.textContent = 'Пожалуйста, введите ваш ник в игре.';
+      nickInput.focus();
+      return;
+    }
+    if (nick.length < 3) {
+      modalError.textContent = 'Ник слишком короткий (минимум 3 символа).';
+      nickInput.focus();
+      return;
+    }
+
+    const item = currentItem;
+    const priceText = item.price === 'уточняется' ? 'уточняется' : item.price + ' ₽';
+
+    const message =
+      'Привет! Хочу купить донат на сервере LTSPST.\n\n' +
+      'Товар: ' + item.name + '\n' +
+      'Цена со скидкой 15%: ' + priceText + '\n' +
+      'Мой ник в игре: ' + nick + '\n\n' +
+      'Пожалуйста, подтвердите покупку.';
+
+    const url = TG_LINK + '?text=' + encodeURIComponent(message);
+    window.open(url, '_blank', 'noopener');
+    closeModal();
+  }
+
+  modalSubmit.addEventListener('click', submitOrder);
+  nickInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      submitOrder();
+    }
+  });
+
+  // Снег
   (function snow() {
     const canvas = document.getElementById('snow-canvas');
     const ctx = canvas.getContext('2d');
