@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Донат — LTSPST Land | Чёрная пятница -15%</title>
+<title>Донат — LTSPST Land | Предзаказ привилегий</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -90,6 +90,7 @@
 
   .page-content { padding: 40px 0 80px; text-align: center; }
   .page-title { font-family: var(--pixel-font); font-size: clamp(16px, 3vw, 22px); margin-bottom: 10px; text-shadow: 0 0 20px rgba(34, 211, 238, 0.2); }
+  .page-subtitle { font-family: var(--pixel-font); font-size: 10px; color: var(--accent-2); letter-spacing: 2px; margin-bottom: 25px; text-transform: uppercase; }
   
   .discount-badge {
     display: inline-block;
@@ -108,6 +109,55 @@
     0% { transform: scale(1); }
     50% { transform: scale(1.03); }
     100% { transform: scale(1); }
+  }
+
+  /* ТАЙМЕР */
+  .countdown-wrap {
+    margin: 0 auto 45px;
+    max-width: 640px;
+  }
+  .countdown-label {
+    font-family: var(--pixel-font);
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+  }
+  .countdown {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .cd-box {
+    background: var(--card);
+    border: 1px solid rgba(124, 92, 255, 0.35);
+    border-radius: 12px;
+    padding: 14px 10px 10px;
+    min-width: 76px;
+    box-shadow: 0 0 25px rgba(124, 92, 255, 0.12);
+  }
+  .cd-num {
+    font-family: var(--pixel-font);
+    font-size: 20px;
+    color: var(--text);
+    display: block;
+    margin-bottom: 8px;
+    text-shadow: 0 0 14px rgba(34, 211, 238, 0.4);
+  }
+  .cd-label {
+    font-family: var(--pixel-font);
+    font-size: 7px;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+  }
+  .cd-sep {
+    font-family: var(--pixel-font);
+    font-size: 16px;
+    color: var(--accent);
+    align-self: center;
+    padding-bottom: 12px;
   }
   
   .donate-hero-image { display: flex; justify-content: center; margin-bottom: 50px; }
@@ -352,6 +402,9 @@
     .info-card { min-width: 260px; }
     .section-subtitle { flex-wrap: wrap; }
     .modal { padding: 28px 22px 24px; }
+    .cd-box { min-width: 62px; padding: 12px 8px 8px; }
+    .cd-num { font-size: 15px; }
+    .cd-sep { display: none; }
   }
 </style>
 </head>
@@ -378,9 +431,24 @@
   </nav>
 
   <div class="page-content">
-    <h2 class="page-title">Донаты и привилегии</h2>
+    <h2 class="page-title">ДОНАТЫ</h2>
+    <div class="page-subtitle">Предзаказ привилегий</div>
     
-    <div class="discount-badge">🔥 ЧЁРНАЯ ПЯТНИЦА — СКИДКИ 15% ДО 10 ДЕКАБРЯ 🔥</div>
+    <div class="discount-badge">🚀 ОТКРЫТИЕ 27.12.2027 — ПРЕДЗАКАЗ ДОНАТОВ 🚀</div>
+
+    <!-- ТАЙМЕР -->
+    <div class="countdown-wrap">
+      <div class="countdown-label">До открытия сервера осталось</div>
+      <div class="countdown" id="countdown">
+        <div class="cd-box"><span class="cd-num" id="cdDays">000</span><span class="cd-label">ДНЕЙ</span></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-box"><span class="cd-num" id="cdHours">00</span><span class="cd-label">ЧАСОВ</span></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-box"><span class="cd-num" id="cdMinutes">00</span><span class="cd-label">МИНУТ</span></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-box"><span class="cd-num" id="cdSeconds">00</span><span class="cd-label">СЕКУНД</span></div>
+      </div>
+    </div>
     
     <div class="donate-hero-image">
       <img src="donate.png" alt="Донат Minecraft">
@@ -406,7 +474,7 @@
         <button class="buy-btn" 
           data-name="Player" 
           data-desc="Бесплатная базовая привилегия с основными командами для комфортной игры." 
-          data-price="0">Купить</button>
+          data-price="0" data-discount="0">Купить</button>
       </div>
 
       <!-- Creative -->
@@ -423,7 +491,7 @@
         <button class="buy-btn" 
           data-name="Creative" 
           data-desc="Переключение между режимами игры: креатив и выживание. Полезно для строительства и тестов." 
-          data-price="8.5">Купить</button>
+          data-price="8.5" data-discount="15">Купить</button>
       </div>
 
       <!-- Admin -->
@@ -443,7 +511,7 @@
         <button class="buy-btn" 
           data-name="Admin" 
           data-desc="Расширенные права: телепорт к игрокам, варпы, кик нарушителей и режим невидимости для слежки." 
-          data-price="42.5">Купить</button>
+          data-price="42.5" data-discount="15">Купить</button>
       </div>
 
       <!-- Owner -->
@@ -462,13 +530,13 @@
         <button class="buy-btn" 
           data-name="Owner" 
           data-desc="Максимальный набор прав: бан/мут/кик, WorldEdit для строительства, и другие возможности." 
-          data-price="127.5">Купить</button>
+          data-price="127.5" data-discount="15">Купить</button>
       </div>
 
     </div>
 
     <!-- БЛОК 2: КИТЫ -->
-    <h3 class="section-subtitle">Киты <span class="sub-discount">-15%</span></h3>
+    <h3 class="section-subtitle">Киты <span class="sub-discount">-20%</span></h3>
     <div class="scroll-container">
       
       <!-- Кит LTSPST -->
@@ -485,13 +553,14 @@
           <li>5 золотых яблок</li>
         </ul>
         <div class="price-tag">
-          <span class="price-label">Цена со скидкой (уточняйте):</span>
-          <span class="price-new">-15%</span>
+          <span class="price-label">Стоимость со скидкой:</span>
+          <span class="price-old">150₽</span>
+          <span class="price-new">120₽</span>
         </div>
         <button class="buy-btn" 
           data-name="Кит LTSPST" 
           data-desc="Полный набор зачарованного алмазного снаряжения и оружия для уверенного старта." 
-          data-price="уточняется">Купить</button>
+          data-price="120" data-discount="20">Купить</button>
       </div>
 
       <!-- Кит Kami_lotik -->
@@ -507,12 +576,12 @@
         <div class="price-tag">
           <span class="price-label">Стоимость со скидкой:</span>
           <span class="price-old">350₽</span>
-          <span class="price-new">297.5₽</span>
+          <span class="price-new">280₽</span>
         </div>
         <button class="buy-btn" 
           data-name="Кит Kami_lotik" 
           data-desc="Полный зачарованный незеритовый сет и меч с максимальными чарами." 
-          data-price="297.5">Купить</button>
+          data-price="280" data-discount="20">Купить</button>
       </div>
 
       <!-- Кит SPIRIDUY -->
@@ -526,18 +595,18 @@
         <div class="price-tag">
           <span class="price-label">Стоимость со скидкой:</span>
           <span class="price-old">350₽</span>
-          <span class="price-new">297.5₽</span>
+          <span class="price-new">280₽</span>
         </div>
         <button class="buy-btn" 
           data-name="Кит SPIRIDUY" 
           data-desc="Зачарованный незеритовый сет, булава бога и трезубец нового поколения." 
-          data-price="297.5">Купить</button>
+          data-price="280" data-discount="20">Купить</button>
       </div>
 
     </div>
 
     <!-- БЛОК 3: СПЕЦИАЛЬНЫЕ ПРИВИЛЕГИИ -->
-    <h3 class="section-subtitle">Специальные привилегии <span class="sub-discount">-15%</span></h3>
+    <h3 class="section-subtitle">Специальные привилегии</h3>
     <div class="scroll-container">
       
       <!-- SPONSOR -->
@@ -548,14 +617,13 @@
           <li>Место на доске почёта в лобби сервера</li>
         </ul>
         <div class="price-tag">
-          <span class="price-label">Стоимость со скидкой:</span>
-          <span class="price-old">от 300₽ / 6 мес</span>
-          <span class="price-new">от 255₽ / 6 мес</span>
+          <span class="price-label">Стоимость:</span>
+          <span class="price-new">от 300₽ / 6 мес</span>
         </div>
         <button class="buy-btn" 
           data-name="SPONSOR" 
           data-desc="Уникальный префикс над головой и место на доске почёта в лобби сервера на 6 месяцев." 
-          data-price="от 255 / 6 мес">Купить</button>
+          data-price="от 300 / 6 мес" data-discount="0">Купить</button>
       </div>
 
       <!-- OLD -->
@@ -565,27 +633,26 @@
           <li>Префикс над головой</li>
         </ul>
         <div class="price-tag">
-          <span class="price-label">Стоимость со скидкой:</span>
-          <span class="price-old">от 50₽ / 6 мес</span>
-          <span class="price-new">от 42.5₽ / 6 мес</span>
+          <span class="price-label">Стоимость:</span>
+          <span class="price-new">от 50₽ / 6 мес</span>
         </div>
         <button class="buy-btn" 
           data-name="OLD" 
           data-desc="Стильный префикс над головой на 6 месяцев для старых и верных игроков." 
-          data-price="от 42.5 / 6 мес">Купить</button>
+          data-price="от 50 / 6 мес" data-discount="0">Купить</button>
       </div>
 
     </div>
 
     <!-- КНОПКА СВЯЗИ -->
     <div class="btn-center">
-      <a class="donate-btn" href="https://t.me/Pine21?text=Привет!%20Хочу%20купить%20донат%20на%20сервере%20LTSPST%20со%20скидкой%2015%25.%0A%0AМой%20ник%20в%20игре:%20[Впиши%20свой%20ник]%0AЖелаемая%20привилегия/кит:%20[Впиши%20название]" target="_blank" rel="noopener">
-        Купить донат со скидкой (Telegram)
+      <a class="donate-btn" href="https://t.me/Pine21?text=Привет!%20Хочу%20оформить%20предзаказ%20доната%20на%20сервере%20LTSPST.%0A%0AМой%20ник%20в%20игре:%20[Впиши%20свой%20ник]%0AЖелаемая%20привилегия/кит:%20[Впиши%20название]" target="_blank" rel="noopener">
+        Оформить предзаказ (Telegram)
       </a>
     </div>
   </div>
 
-  <footer>Ждём тебя на LTSPST Land<br><br>©2026 | Проект LTSPST | Официальный сайт</footer>
+  <footer>Ждём тебя на LTSPST Land 27.12.2027<br><br>©2027 | Проект LTSPST | Официальный сайт</footer>
 </div>
 
 <!-- МОДАЛЬНОЕ ОКНО -->
@@ -596,7 +663,7 @@
     <div class="modal-desc" id="modalDesc">Описание товара</div>
     <label class="modal-label" for="nickInput">Ваш ник в игре</label>
     <input type="text" class="modal-input" id="nickInput" placeholder="Например: Steve123" maxlength="16" autocomplete="off">
-    <div class="modal-note">Вы будете перенаправлены в Telegram для продолжения покупки. Время занимает от 12 до 48 часов.</div>
+    <div class="modal-note">Это предзаказ. Привилегия/кит будет активирован после открытия сервера 27.12.2027. Вы будете перенаправлены в Telegram для подтверждения.</div>
     <div class="modal-error" id="modalError"></div>
     <button class="modal-submit" id="modalSubmit">Перейти в Telegram</button>
   </div>
@@ -605,7 +672,32 @@
 <script>
   /* ===== НАСТРОЙКИ ===== */
   const TG_LINK = 'https://t.me/Pine21';
+  const OPEN_DATE = new Date(2027, 11, 27, 18, 0, 0); // 27.12.2027 18:00
   /* ===================== */
+
+  // Таймер
+  (function countdown() {
+    const dEl = document.getElementById('cdDays');
+    const hEl = document.getElementById('cdHours');
+    const mEl = document.getElementById('cdMinutes');
+    const sEl = document.getElementById('cdSeconds');
+    function pad(n, len) { return String(n).padStart(len, '0'); }
+    function tick() {
+      const now = new Date();
+      let diff = OPEN_DATE - now;
+      if (diff < 0) diff = 0;
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+      dEl.textContent = pad(days, 3);
+      hEl.textContent = pad(hours, 2);
+      mEl.textContent = pad(minutes, 2);
+      sEl.textContent = pad(seconds, 2);
+    }
+    tick();
+    setInterval(tick, 1000);
+  })();
 
   // Меню
   const toggle = document.getElementById('menuToggle');
@@ -655,7 +747,8 @@
       openModal({
         name: btn.dataset.name,
         desc: btn.dataset.desc,
-        price: btn.dataset.price
+        price: btn.dataset.price,
+        discount: btn.dataset.discount
       });
     });
   });
@@ -679,14 +772,15 @@
     }
 
     const item = currentItem;
-    const priceText = item.price === 'уточняется' ? 'уточняется' : item.price + ' ₽';
+    const discountNum = parseInt(item.discount || '0', 10);
+    const discountText = discountNum > 0 ? ' (скидка ' + discountNum + '%)' : '';
 
     const message =
-      'Привет! Хочу купить донат на сервере LTSPST.\n\n' +
+      'Привет! Хочу оформить предзаказ на сервере LTSPST.\n\n' +
       'Товар: ' + item.name + '\n' +
-      'Цена со скидкой 15%: ' + priceText + '\n' +
+      'Цена' + discountText + ': ' + item.price + ' ₽\n' +
       'Мой ник в игре: ' + nick + '\n\n' +
-      'Пожалуйста, подтвердите покупку.';
+      'Пожалуйста, подтвердите предзаказ.';
 
     const url = TG_LINK + '?text=' + encodeURIComponent(message);
     window.open(url, '_blank', 'noopener');
